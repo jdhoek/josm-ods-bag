@@ -131,6 +131,9 @@ public class ExternalBagAddressNode extends ExternalBagEntity implements
 
     @Override
     public Command updateGeometry(Point point) {
+    	if (!point.equals(getGeometry())) {
+    	    setGeometry(point);
+    	}
         return null;
     }
 
