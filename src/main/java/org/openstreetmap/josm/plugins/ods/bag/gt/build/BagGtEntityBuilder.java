@@ -2,6 +2,7 @@ package org.openstreetmap.josm.plugins.ods.bag.gt.build;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 import org.opengis.feature.simple.SimpleFeature;
@@ -15,6 +16,8 @@ import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaDataException;
 
 public abstract class BagGtEntityBuilder<T extends Entity, T2 extends T> implements GeotoolsEntityBuilder<T> {
+    private final static DateTimeFormatter sourceDateFormatter = DateTimeFormatter.ISO_LOCAL_DATE
+            ;
     private final static DateFormat sourceDateFormat = new SimpleDateFormat("YYYY-MM-dd");
     private final CRSUtil crsUtil;
     

@@ -20,7 +20,7 @@ public abstract class BagPrimitiveBuilder<T extends Entity>
         if (entity.getPrimitive() == null && entity.getGeometry() != null) {
             Map<String, String> tags = new HashMap<>();
             buildTags(entity, tags);
-            OsmPrimitive primitive = build(entity.getGeometry(), tags);
+            OsmPrimitive primitive = build(entity, tags);
             entity.setPrimitive(primitive);
             getLayerManager().register(primitive, entity);
         }
