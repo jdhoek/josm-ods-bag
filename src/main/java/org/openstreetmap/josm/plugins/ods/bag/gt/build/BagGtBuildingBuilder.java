@@ -7,56 +7,57 @@ import org.openstreetmap.josm.plugins.ods.crs.CRSUtil;
 import org.openstreetmap.josm.plugins.ods.entities.EntityStatus;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 import org.openstreetmap.josm.plugins.ods.entities.actual.BuildingType;
-import org.openstreetmap.josm.plugins.ods.entities.opendata.FeatureUtil;
 import org.openstreetmap.josm.plugins.ods.io.DownloadResponse;
+import org.openstreetmap.josm.plugins.ods.properties.EntityMapper;
 
 public class BagGtBuildingBuilder extends BagGtEntityBuilder<Building, BagBuilding> {
+    private EntityMapper<SimpleFeature, BagBuilding> buildingMapper;
+    private EntityMapper<SimpleFeature, BagAddress> addressMapper;
     
-    public BagGtBuildingBuilder(CRSUtil crsUtil) {
+    public BagGtBuildingBuilder(CRSUtil crsUtil, EntityMapper<SimpleFeature, BagBuilding> buildingMapper) {
         super(crsUtil);
+        this.buildingMapper = buildingMapper;
     }
 
-    @Override
-    protected BagBuilding newInstance() {
-        return new BagBuilding();
-    }
+//    @Override
+//    protected BagBuilding newInstance() {
+//        return new BagBuilding();
+//    }
 
     @Override
     public BagBuilding build(SimpleFeature feature, DownloadResponse response) {
-        BagBuilding building = super.build(feature, response);
-        String type = feature.getName().getLocalPart();
-        Integer bouwjaar = FeatureUtil.getInteger(feature, "bouwjaar");
-        if (bouwjaar != null) {
-            building.setStartDate(bouwjaar.toString());
-        }
-        // Find a better way to handle the mapping from feature attributes to Entity attributes
-        String status = FeatureUtil.getString(feature, "status");
-        if (status == null) {
-            status = FeatureUtil.getString(feature, "pandstatus");
-        }
-        building.setStatus(parseStatus(status));
-        if (type.equals("bag:pand") || type.equals("osm_bag:buildingdestroyed_osm")) {
-            building.setBuildingType(BuildingType.UNCLASSIFIED);
-            building.setAantalVerblijfsobjecten(FeatureUtil.getLong(feature, "aantal_verblijfsobjecten"));
-        }
-        else {
-            BagAddress address = new BagAddress();
-            address.setHouseNumber(FeatureUtil.getInteger(feature, "huisnummer"));
-            address.setHuisletter(FeatureUtil.getString(feature, "huisletter"));
-            address.setHuisnummerToevoeging(FeatureUtil.getString(feature, "toevoeging"));
-            address.setStreetName(FeatureUtil.getString(feature, "openbare_ruimte"));
-            address.setCityName(FeatureUtil.getString(feature, "woonplaats"));
-            address.setPostcode(FeatureUtil.getString(feature, "postcode"));
+        BagBuilding building = buildingMapper.map(feature);
+//        BagBuilding building = buildingFactory.create();
+//        BagBuilding building = super.build(feature, response);
+//        String type = feature.getName().getLocalPart();
+//        building.setStartDate(startDateMapper.get(feature));
+//        String status = statusMapper.get(feature);
+//        // TODO consider moving this code to the statusMapper
+//        building.setStatus(parseStatus(status));
+//        if (type.equals("bag:pand") || type.equals("osm_bag:buildingdestroyed_osm")) {
+//            building.setBuildingType(BuildingType.UNCLASSIFIED);
+//            building.setAantalVerblijfsobjecten(FeatureUtil.getLong(feature, "aantal_verblijfsobjecten"));
+//        }
+        if (building.getBuildingType().equals(BuildingType.HOUSEBOAT) ||
+                building.getBuildingType().equals(BuildingType.STATIC_CARAVAN)) {
+            BagAddress address = addressMapper.map(feature);
+//                    new BagAddress();
+//            address.setHouseNumber(FeatureUtil.getInteger(feature, "huisnummer"));
+//            address.setHuisletter(FeatureUtil.getString(feature, "huisletter"));
+//            address.setHuisnummerToevoeging(FeatureUtil.getString(feature, "toevoeging"));
+//            address.setStreetName(FeatureUtil.getString(feature, "openbare_ruimte"));
+//            address.setCityName(FeatureUtil.getString(feature, "woonplaats"));
+//            address.setPostcode(FeatureUtil.getString(feature, "postcode"));
             building.setAddress(address);
-            if (type.equals("bag:ligplaats")) {
-                building.setBuildingType(BuildingType.HOUSEBOAT);
-            }
-            else if (type.equals("bag:standplaats")) {
-                building.setBuildingType(BuildingType.STATIC_CARAVAN);
-            }
-            else {
-                building.setBuildingType(BuildingType.UNCLASSIFIED);
-            }
+//            if (type.equals("bag:ligplaats")) {
+//                building.setBuildingType(BuildingType.HOUSEBOAT);
+//            }
+//            else if (type.equals("bag:standplaats")) {
+//                building.setBuildingType(BuildingType.STATIC_CARAVAN);
+//            }
+//            else {
+//                building.setBuildingType(BuildingType.UNCLASSIFIED);
+//            }
         }
         return building;
     }

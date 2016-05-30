@@ -6,13 +6,35 @@ import org.openstreetmap.josm.plugins.ods.bag.entity.BagAddressNode;
 import org.openstreetmap.josm.plugins.ods.crs.CRSUtil;
 import org.openstreetmap.josm.plugins.ods.entities.EntityStatus;
 import org.openstreetmap.josm.plugins.ods.entities.actual.AddressNode;
-import org.openstreetmap.josm.plugins.ods.entities.opendata.FeatureUtil;
+import org.openstreetmap.josm.plugins.ods.geotools.AttributeMapper;
+import org.openstreetmap.josm.plugins.ods.geotools.FeatureMapper;
 import org.openstreetmap.josm.plugins.ods.io.DownloadResponse;
 
 public class BagGtAddressNodeBuilder extends BagGtEntityBuilder<AddressNode, BagAddressNode> {
+    private AttributeMapper<Integer> houseNumberMapper;
+    private AttributeMapper<Character> houseLetterMapper;
+    private AttributeMapper<String> houseNumberExtraMapper;
+    private AttributeMapper<String> streetNameMapper;
+    private AttributeMapper<String> cityNameMapper;
+    private AttributeMapper<String> postCodeMapper;
+    private AttributeMapper<String> gebruiksdoelMapper;
+    private AttributeMapper<String> statusMapper;
+    private AttributeMapper<Double> areaMapper;
+    private AttributeMapper<Long> buildingRefMapper;
+
     
-    public BagGtAddressNodeBuilder(CRSUtil crsUtil) {
+    public BagGtAddressNodeBuilder(CRSUtil crsUtil, FeatureMapper featureMapper) {
         super(crsUtil);
+        houseNumberMapper = featureMapper.getAttributeMapper("houseNumber", Integer.class);
+        houseLetterMapper = featureMapper.getAttributeMapper("houseLetter", Character.class);
+        houseNumberExtraMapper = featureMapper.getAttributeMapper("houseNumberExtra", String.class);
+        streetNameMapper = featureMapper.getAttributeMapper("streetName", String.class);
+        cityNameMapper = featureMapper.getAttributeMapper("cityName", String.class);
+        postCodeMapper = featureMapper.getAttributeMapper("postCode", String.class);
+        gebruiksdoelMapper = featureMapper.getAttributeMapper("gebruiksdoel", String.class);
+        statusMapper = featureMapper.getAttributeMapper("statusName", String.class);
+        areaMapper = featureMapper.getAttributeMapper("area", Double.class);
+        buildingRefMapper = featureMapper.getAttributeMapper("buildingRef", Long.class);
     }
 
     @Override
@@ -24,26 +46,17 @@ public class BagGtAddressNodeBuilder extends BagGtEntityBuilder<AddressNode, Bag
     public BagAddressNode build(SimpleFeature feature, DownloadResponse response) {
         BagAddressNode addressNode = super.build(feature, response);
         BagAddress address = new BagAddress();
-        address.setHouseNumber(FeatureUtil.getInteger(feature, "huisnummer"));
-        String houseLetter = FeatureUtil.getString(feature, "huisletter");
-        if (houseLetter != null) {
-            address.setHuisletter(houseLetter);
-            address.setHouseLetter(houseLetter.charAt(0));
-        }
-        String houseNumberExtra = FeatureUtil.getString(feature, "toevoeging");
-        address.setHuisnummerToevoeging(houseNumberExtra);
-        address.setHouseNumberExtra(houseNumberExtra);
-        address.setStreetName(FeatureUtil.getString(feature, "openbare_ruimte"));
-        address.setCityName(FeatureUtil.getString(feature, "woonplaats"));
-        String postcode = FeatureUtil.getString(feature, "postcode");
-        if (postcode != null) {
-            address.setPostcode(FeatureUtil.getString(feature, "postcode"));
-        }
+        address.setHouseNumber(houseNumberMapper.get(feature));
+        address.setHouseLetter(houseLetterMapper.get(feature));
+        address.setHouseNumberExtra(houseNumberExtraMapper.get(feature));
+        address.setStreetName(streetNameMapper.get(feature));
+        address.setCityName(cityNameMapper.get(feature));
+        address.setPostcode(postCodeMapper.get(feature));
         addressNode.setAddress(address);
-        addressNode.setStatus(parseStatus(FeatureUtil.getString(feature, "status")));
-        addressNode.setGebruiksdoel(FeatureUtil.getString(feature, "gebruiksdoel"));
-        addressNode.setArea(FeatureUtil.getDouble(feature, "oppervlakte"));
-        addressNode.setBuildingRef(FeatureUtil.getLong(feature, "pandidentificatie"));
+        addressNode.setStatus(parseStatus(statusMapper.get(feature)));
+        addressNode.setGebruiksdoel(gebruiksdoelMapper.get(feature));
+        addressNode.setArea(areaMapper.get(feature));
+        addressNode.setBuildingRef(buildingRefMapper.get(feature));
         return addressNode;
     }
 

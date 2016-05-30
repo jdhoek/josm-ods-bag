@@ -24,15 +24,4 @@ public class BagBuilding extends BuildingImpl {
     public Long getAantal_verblijfsobjecten() {
         return aantalVerblijfsobjecten;
     }
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Building ").append(getReferenceId());
-        sb.append(" (").append(getStatus()).append(")");
-        for (AddressNode a :getAddressNodes()) {
-            sb.append("\n").append(a.toString());
-        }
-        return sb.toString();
-    }
 }

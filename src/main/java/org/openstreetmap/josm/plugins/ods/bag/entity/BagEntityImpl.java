@@ -11,7 +11,7 @@ public abstract class BagEntityImpl extends AbstractEntity {
 //    }
     
     public void setIdentificatie(Long identificatie) {
-        this.identificatie = identificatie;    
+        this.identificatie = identificatie;
     }
     
 //    @Override

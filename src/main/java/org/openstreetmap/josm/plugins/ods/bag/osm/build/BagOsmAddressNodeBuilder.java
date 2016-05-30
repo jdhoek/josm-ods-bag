@@ -7,18 +7,25 @@ import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.OsmPrimitiveType;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.bag.entity.BagAddress;
-import org.openstreetmap.josm.plugins.ods.bag.entity.BagAddressNode;
+import org.openstreetmap.josm.plugins.ods.entities.Entity;
+import org.openstreetmap.josm.plugins.ods.entities.actual.Address;
 import org.openstreetmap.josm.plugins.ods.entities.actual.AddressNode;
-import org.openstreetmap.josm.plugins.ods.entities.actual.MutableAddress;
-import org.openstreetmap.josm.plugins.ods.entities.actual.impl.AddressNodeEntityType;
+import org.openstreetmap.josm.plugins.ods.entities.actual.impl.AddressNodeImpl;
 import org.openstreetmap.josm.plugins.ods.entities.osm.AbstractOsmEntityBuilder;
+import org.openstreetmap.josm.plugins.ods.entities.osm.OsmLayerManager;
+import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
+import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitiveFactory;
 
 import com.vividsolutions.jts.geom.Point;
 
 public class BagOsmAddressNodeBuilder extends AbstractOsmEntityBuilder<AddressNode> {
+    private final OsmLayerManager layerManager;
+    private final ManagedPrimitiveFactory factory;
     
     public BagOsmAddressNodeBuilder(OdsModule module) {
-        super(module, AddressNodeEntityType.getInstance());
+        super(module, AddressNode.class);
+        layerManager = module.getOsmLayerManager();
+        factory = new ManagedPrimitiveFactory(layerManager);
     }
 
     @Override
@@ -26,33 +33,40 @@ public class BagOsmAddressNodeBuilder extends AbstractOsmEntityBuilder<AddressNo
         return AddressNode.class;
     }
 
-
     @Override
     public void buildOsmEntity(OsmPrimitive primitive) {
-        if (getEntityType().recognize(primitive)) {
-            if (!getEntityStore().contains(primitive.getId())) {
-                normalizeKeys(primitive);
-                MutableAddress address = new BagAddress();
-                BagAddressNode addressNode = new BagAddressNode();
-                addressNode.setPrimaryId(primitive.getUniqueId());
-                addressNode.setPrimitive(primitive);
-                addressNode.setAddress(address);
-                Map<String, String> tags = primitive.getKeys();
-                BagOsmAddressEntityBuilder.parseKeys(address, tags);
-                parseKeys(addressNode, tags);
-                addressNode.setOtherTags(tags);
-                addressNode.setGeometry(buildGeometry(primitive));
-                register(primitive, addressNode);
+        if (AddressNode.isAddressNode(primitive)) {
+            ManagedPrimitive<?> managedPrimitive = layerManager.getManagedPrimitive(primitive);
+            if (managedPrimitive == null) {
+                managedPrimitive = factory.createNode((Node) primitive);
             }
+            Entity entity = managedPrimitive.getEntity();
+            if (entity != null) {
+                assert getEntityClass().isInstance(entity);
+                return;
+            }
+            normalizeKeys(managedPrimitive);
+            Address address = new BagAddress();
+            AddressNodeImpl addressNode = new AddressNodeImpl();
+            addressNode.setPrimaryId(managedPrimitive.getUniqueId());
+            addressNode.setPrimitive(managedPrimitive);
+            addressNode.setAddress(address);
+            Map<String, String> tags = primitive.getKeys();
+            BagOsmAddressEntityBuilder.parseKeys(address, tags);
+            parseKeys(addressNode, tags);
+            addressNode.setOtherTags(tags);
+            addressNode.setGeometry(buildGeometry(primitive));
+            managedPrimitive.setEntity(addressNode);
+            layerManager.getRepository().add(addressNode);
         }
         return;
     }
     
-    public static void normalizeKeys(OsmPrimitive primitive) {
+    public static void normalizeKeys(ManagedPrimitive<?> primitive) {
         BagOsmEntityBuilder.normalizeTags(primitive);
     }
     
-    private static void parseKeys(BagAddressNode addressNode, Map<String, String> tags) {
+    private static void parseKeys(AddressNode addressNode, Map<String, String> tags) {
         BagOsmEntityBuilder.parseKeys(addressNode, tags); 
     }
     

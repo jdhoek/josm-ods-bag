@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.openstreetmap.josm.plugins.ods.bag.entity.BagAddressNode;
+import org.openstreetmap.josm.plugins.ods.bag.entity.BagHousingUnit;
 import org.openstreetmap.josm.plugins.ods.bag.gt.build.BagBuildingTypeAnalyzer.Statistics.Stat;
 import org.openstreetmap.josm.plugins.ods.entities.actual.AddressNode;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
@@ -40,7 +40,7 @@ public class BagBuildingTypeAnalyzer {
         }
         BuildingType type = BuildingType.UNCLASSIFIED;
         if (building.getAddressNodes().size() == 1) {
-            type = getBuildingType((BagAddressNode)building.getAddressNodes().get(0));
+            type = getBuildingType((BagHousingUnit)building.getAddressNodes().get(0));
         }
         else {
             type = getBuildingType(building.getAddressNodes());
@@ -52,7 +52,7 @@ public class BagBuildingTypeAnalyzer {
         Statistics stats = new Statistics();
         Iterator<AddressNode> it = addresses.iterator();
         while (it.hasNext()) {
-            BagAddressNode addressNode = (BagAddressNode) it.next();
+            BagHousingUnit addressNode = (BagHousingUnit) it.next();
             BuildingType type = getBuildingType(addressNode);
             stats.add(type, addressNode.getArea());
         }
@@ -75,8 +75,8 @@ public class BagBuildingTypeAnalyzer {
         return type;
     }
 
-    private static BuildingType getBuildingType(BagAddressNode addressNode) {
-        String extra = addressNode.getHuisNummerToevoeging();
+    private static BuildingType getBuildingType(BagHousingUnit housingUnit) {
+        String extra = housingUnit.getMainAddressNode().getAddress().getHouseNumberExtra();
         if (extra != null) {
             extra = extra.toUpperCase();
             if (trafo.contains(extra)) {
@@ -86,7 +86,7 @@ public class BagBuildingTypeAnalyzer {
                 return BuildingType.GARAGE;
             }
         }
-        switch (addressNode.getGebruiksdoel().toLowerCase()) {
+        switch (housingUnit.getGebruiksdoel().toLowerCase()) {
         case "woonfunctie":
             return BuildingType.HOUSE;
         case "overige gebruiksfunctie":

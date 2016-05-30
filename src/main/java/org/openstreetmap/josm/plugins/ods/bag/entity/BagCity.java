@@ -1,8 +1,6 @@
 package org.openstreetmap.josm.plugins.ods.bag.entity;
 
-import org.openstreetmap.josm.plugins.ods.entities.EntityType;
 import org.openstreetmap.josm.plugins.ods.entities.actual.City;
-import org.openstreetmap.josm.plugins.ods.entities.actual.impl.CityEntityType;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiPolygon;
@@ -14,8 +12,8 @@ public class BagCity extends BagEntityImpl implements City {
 
     
     @Override
-    public EntityType<City> getEntityType() {
-        return CityEntityType.getInstance();
+    public Class<City> getBaseType() {
+        return City.class;
     }
 
     public void setName(String name) {

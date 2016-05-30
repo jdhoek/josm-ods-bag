@@ -1,5 +1,6 @@
 package org.openstreetmap.josm.plugins.ods.bag.osm.build;
 
+import java.time.LocalDate;
 import java.util.Map;
 
 import org.openstreetmap.josm.plugins.ods.LayerManager;
@@ -10,7 +11,7 @@ import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 public class BagBuildingEntityPrimitiveBuilder extends BagEntityPrimitiveBuilder<Building> {
 
     public BagBuildingEntityPrimitiveBuilder(LayerManager dataLayer) {
-        super(dataLayer);
+        super(dataLayer, Building.class);
     }
 
     @Override
@@ -32,7 +33,10 @@ public class BagBuildingEntityPrimitiveBuilder extends BagEntityPrimitiveBuilder
             createAddressTags(address, tags);
         }
         tags.put("source", "BAG");
-        tags.put("source:date", building.getSourceDate());
+        LocalDate date = building.getSourceDate();
+        if (date != null) {
+            tags.put("source:date", date.toString());
+        }
         tags.put("ref:bag", building.getReferenceId().toString());
         if (building.getStartDate() != null) {
             tags.put("start_date", building.getStartDate());

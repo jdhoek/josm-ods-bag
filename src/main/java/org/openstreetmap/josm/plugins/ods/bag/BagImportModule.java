@@ -17,27 +17,25 @@ import org.openstreetmap.josm.plugins.ods.bag.osm.build.BagOsmAddressNodeBuilder
 import org.openstreetmap.josm.plugins.ods.bag.osm.build.BagOsmBuildingBuilder;
 import org.openstreetmap.josm.plugins.ods.crs.CRSUtil;
 import org.openstreetmap.josm.plugins.ods.crs.CRSUtilProj4j;
+import org.openstreetmap.josm.plugins.ods.entities.GeoEntityRepository;
 import org.openstreetmap.josm.plugins.ods.entities.actual.AddressNode;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
-import org.openstreetmap.josm.plugins.ods.entities.actual.impl.AddressNodeEntityType;
-import org.openstreetmap.josm.plugins.ods.entities.actual.impl.BuildingEntityType;
-import org.openstreetmap.josm.plugins.ods.entities.actual.impl.opendata.OpenDataAddressNodeStore;
-import org.openstreetmap.josm.plugins.ods.entities.actual.impl.opendata.OpenDataBuildingStore;
-import org.openstreetmap.josm.plugins.ods.entities.actual.impl.osm.OsmAddressNodeStore;
-import org.openstreetmap.josm.plugins.ods.entities.actual.impl.osm.OsmBuildingStore;
+import org.openstreetmap.josm.plugins.ods.entities.actual.HousingUnit;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.OpenDataLayerManager;
+import org.openstreetmap.josm.plugins.ods.entities.osm.OsmLayerDownloader;
 import org.openstreetmap.josm.plugins.ods.entities.osm.OsmLayerManager;
+import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 import org.openstreetmap.josm.plugins.ods.gui.OdsDownloadAction;
 import org.openstreetmap.josm.plugins.ods.gui.OdsResetAction;
 import org.openstreetmap.josm.plugins.ods.gui.OdsUpdateAction;
 import org.openstreetmap.josm.plugins.ods.io.MainDownloader;
 import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
+import org.openstreetmap.josm.plugins.ods.matching.AddressNodeMatcher;
+import org.openstreetmap.josm.plugins.ods.matching.BuildingMatcher;
 import org.openstreetmap.josm.tools.I18n;
 
-import exceptions.OdsException;
-
 public class BagImportModule extends OdsModule {
-    private OdsModuleConfiguration configuration = new BagConfiguration();
+    private OdsModuleConfiguration configuration;
     // Boundary of the Netherlands
     private final static Bounds BOUNDS = new Bounds(50.734, 3.206, 53.583, 7.245);
 //    private final OdsDownloader odsDownloader;
@@ -46,9 +44,19 @@ public class BagImportModule extends OdsModule {
     private CRSUtil crsUtil = new CRSUtilProj4j();
 
     public BagImportModule() {
-        this.mainDownloader = new BagDownloader(this);
+        this.configuration = new BagConfiguration();
+        this.mainDownloader = createMainDownloader();
     }
     
+    private MainDownloader createMainDownloader() {
+        MainDownloader downloader = new MainDownloader(this);
+        downloader.setOpenDataLayerDownloader(new BagWfsLayerDownloader(this));
+        downloader.setOsmLayerDownloader(new OsmLayerDownloader(this));
+        downloader.addMatcher(new BuildingMatcher(this));
+        downloader.addMatcher(new AddressNodeMatcher(this));
+        return downloader;
+    }
+
     @Override
     public OdsModuleConfiguration getConfiguration() {
         return configuration;
@@ -58,8 +66,6 @@ public class BagImportModule extends OdsModule {
     public void initialize() throws OdsException {
         super.initialize();
         mainDownloader.initialize();
-        addEntityType(BuildingEntityType.getInstance());
-        addEntityType(AddressNodeEntityType.getInstance());
         addOsmEntityBuilder(new BagOsmBuildingBuilder(this));
         addOsmEntityBuilder(new BagOsmAddressNodeBuilder(this));
         addAction(new OdsDownloadAction(this));
@@ -74,16 +80,28 @@ public class BagImportModule extends OdsModule {
     @Override
     protected OsmLayerManager createOsmLayerManager() {
         OsmLayerManager manager = new OsmLayerManager(this, "BAG OSM");
-        manager.addEntityStore(Building.class, new OsmBuildingStore());
-        manager.addEntityStore(AddressNode.class, new OsmAddressNodeStore());
+//        manager.addEntityStore(Building.class, new OsmBuildingStore());
+//        manager.addEntityStore(AddressNode.class, new OsmAddressNodeStore());
+        GeoEntityRepository repository = manager.getRepository();
+        repository.register(Building.class, "primaryId");
+        repository.addIndex(Building.class, "referenceId");
+        repository.addGeoIndex(Building.class, "geometry");
+        repository.register(AddressNode.class, "primaryId");
         return manager;
     }
 
     @Override
     protected OpenDataLayerManager createOpenDataLayerManager() {
         OpenDataLayerManager manager = new OpenDataLayerManager("BAG ODS");
-        manager.addEntityStore(Building.class, new OpenDataBuildingStore());
-        manager.addEntityStore(AddressNode.class, new OpenDataAddressNodeStore());
+//        manager.addEntityStore(Building.class, new OpenDataBuildingStore());
+//        manager.addEntityStore(HousingUnit.class, new OpenDataHousingUnitStore());
+//        manager.addEntityStore(AddressNode.class, new OpenDataAddressNodeStore());
+        GeoEntityRepository repository = manager.getRepository();
+        repository.register(Building.class, "primaryId");
+        repository.addIndex(Building.class, "referenceId");
+        repository.addGeoIndex(Building.class, "geometry");
+        repository.register(HousingUnit.class, "primaryId");
+        repository.register(AddressNode.class, "primaryId");
         return manager;
     }
 

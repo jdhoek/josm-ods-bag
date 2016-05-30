@@ -1,11 +1,13 @@
 package org.openstreetmap.josm.plugins.ods.bag.osm.build;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.Map;
 
-import org.openstreetmap.josm.data.osm.OsmPrimitive;
-import org.openstreetmap.josm.plugins.ods.entities.AbstractEntity;
+import org.openstreetmap.josm.plugins.ods.entities.Entity;
+import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 
-public abstract class BagOsmEntityBuilder {
+public class BagOsmEntityBuilder {
     
     /*
      * Earlier versions of the BAG import plug-in and some other small BAG
@@ -13,7 +15,7 @@ public abstract class BagOsmEntityBuilder {
      * This method translates these tags into their current equivalent and
      * remove the old tags.
      */   
-    public static void normalizeTags(OsmPrimitive primitive) {
+    public static void normalizeTags(ManagedPrimitive<?> primitive) {
         String source = primitive.get("source");
         if (source != null && source.toUpperCase().startsWith("BAG")) {
             primitive.put("source", "BAG");
@@ -31,50 +33,18 @@ public abstract class BagOsmEntityBuilder {
                 }
             }
         }
-        primitive.remove("bag:status");
-        primitive.remove("bag:begindatum");
-        normalizeReference(primitive, "ref:bag");
-        normalizeReference(primitive, "ref:bagid");
-        normalizeReference(primitive, "bag:id");
-        normalizeReference(primitive, "bag:pand_id");
-        normalizeReference(primitive, "ref:vbo_id");
-        normalizeBagExtract(primitive);
     }
 
-    private static void normalizeReference(OsmPrimitive primitive, String key) {
-        String value = primitive.get(key);
-        if (value == null) return;
-        primitive.remove(key);
-        if (value.length() == 0) return;
-        try {
-            Long reference = Long.parseLong(value);
-            primitive.put("ref:bag", reference.toString());
-        }
-        catch (NumberFormatException e) {
-            return;
-        }
-    }
-
-    private static void normalizeBagExtract(OsmPrimitive primitive) {
-        String value = primitive.get("bag:extract");
-        if (value == null) return;
-        primitive.remove("bag:extract");
-        if (value.startsWith("9999PND") ||
-                value.startsWith("9999LIG") || value.startsWith("9999STA")) {
-            StringBuilder sb = new StringBuilder(10);
-            sb.append(value.substring(11, 15)).append("-")
-                    .append(value.substring(9, 11)).append("-")
-                    .append(value.substring(7, 9));
-            primitive.put("source:date", sb.toString());
-        }
-    }
-    
-    public static void parseKeys(AbstractEntity entity, Map<String, String> tags) {
+    public static void parseKeys(Entity entity, Map<String, String> tags) {
         entity.setReferenceId(getReferenceId(tags.remove("ref:bag")));
         entity.setSource(tags.remove("source"));
         String sourceDate = tags.remove("source:date");
         if (sourceDate != null) {
-            entity.setSourceDate(sourceDate);
+            try {
+                entity.setSourceDate(LocalDate.parse(sourceDate));
+            } catch (@SuppressWarnings("unused") DateTimeParseException e) {
+                // TODO Auto-generated catch block
+            }
         }
     }
     

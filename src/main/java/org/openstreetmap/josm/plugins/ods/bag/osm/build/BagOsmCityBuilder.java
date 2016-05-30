@@ -2,23 +2,19 @@ package org.openstreetmap.josm.plugins.ods.bag.osm.build;
 
 import java.util.Map;
 
+import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.OsmPrimitiveType;
+import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.bag.entity.BagCity;
 import org.openstreetmap.josm.plugins.ods.entities.actual.City;
-import org.openstreetmap.josm.plugins.ods.entities.actual.impl.osm.OsmCityStore;
-import org.openstreetmap.josm.plugins.ods.entities.osm.OsmEntityBuilder;
-import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
+import org.openstreetmap.josm.plugins.ods.entities.osm.AbstractOsmEntityBuilder;
+import org.openstreetmap.josm.tools.I18n;
 
-public class BagOsmCityBuilder implements OsmEntityBuilder<City> {
-
-    private GeoUtil geoUtil;
-    private OsmCityStore cityStore;
+public class BagOsmCityBuilder extends AbstractOsmEntityBuilder<City> {
     
-    public BagOsmCityBuilder(GeoUtil geoUtil, OsmCityStore store) {
-        super();
-        this.geoUtil = geoUtil;
-        this.cityStore = store;
+    public BagOsmCityBuilder(OdsModule module) {
+        super(module, City.class);
     }
 
     @Override
@@ -36,7 +32,7 @@ public class BagOsmCityBuilder implements OsmEntityBuilder<City> {
             Map<String, String> tags = primitive.getKeys();
             parseKeys(city, tags);
             city.setOtherTags(tags);
-            cityStore.add(city);
+//            getEntityStore().add(city);
         }
         return;
     }
@@ -52,11 +48,19 @@ public class BagOsmCityBuilder implements OsmEntityBuilder<City> {
         tags.remove("admin_level");
         tags.remove("type");
         city.setName(tags.remove("name"));
+        String id = tags.get("ref:woonplaatscode");
         try {
-            city.setIdentificatie(Long.parseLong((tags.get("ref:gemeentecode"))));
+            if (id == null) {
+                Main.warn(I18n.tr("The city reference code is missing for " +
+                    " city '%s'.", city.getName()));
+                
+            }
+            city.setIdentificatie(Long.parseLong(id));
             tags.remove("ref:gemeentecode");
         }
-        catch (NumberFormatException e) {
+        catch (@SuppressWarnings("unused") NumberFormatException e) {
+            Main.warn(I18n.tr("'%s' is not a valid value for a city reference code" +
+                " (%s).", id, city.getName()));
             // Do nothing, but keep the invalid tag
         }
     }    

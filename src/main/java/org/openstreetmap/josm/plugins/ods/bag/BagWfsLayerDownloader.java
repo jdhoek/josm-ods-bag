@@ -1,6 +1,5 @@
 package org.openstreetmap.josm.plugins.ods.bag;
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.function.Consumer;
 
@@ -8,22 +7,18 @@ import org.openstreetmap.josm.plugins.ods.Normalisation;
 import org.openstreetmap.josm.plugins.ods.OdsDataSource;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.OdsModuleConfiguration;
-import org.openstreetmap.josm.plugins.ods.bag.gt.build.BagGtAddressNodeBuilder;
-import org.openstreetmap.josm.plugins.ods.bag.gt.build.BagGtBuildingBuilder;
 import org.openstreetmap.josm.plugins.ods.bag.gt.build.BuildingTypeEnricher;
-import org.openstreetmap.josm.plugins.ods.entities.actual.AddressNode;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
-import org.openstreetmap.josm.plugins.ods.entities.actual.impl.opendata.OpenDataBuildingStore;
+import org.openstreetmap.josm.plugins.ods.entities.actual.HousingUnit;
 import org.openstreetmap.josm.plugins.ods.entities.enrichment.BuildingCompletenessEnricher;
-import org.openstreetmap.josm.plugins.ods.entities.enrichment.DistributeAddressNodes;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.FeatureDownloader;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.OpenDataLayerDownloader;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.OpenDataLayerManager;
+import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 import org.openstreetmap.josm.plugins.ods.geotools.GtDownloader;
-import org.openstreetmap.josm.plugins.ods.io.Host;
-import org.openstreetmap.josm.plugins.ods.matching.OpenDataAddressNodeToBuildingMatcher;
+import org.openstreetmap.josm.plugins.ods.matching.OpenDataHousingUnitToBuildingMatcher;
 
-import exceptions.OdsException;
+import com.vividsolutions.jts.geom.Geometry;
 
 public class BagWfsLayerDownloader extends OpenDataLayerDownloader {
     
@@ -32,7 +27,7 @@ public class BagWfsLayerDownloader extends OpenDataLayerDownloader {
     private OpenDataLayerManager layerManager;
     private BagPrimitiveBuilder primitiveBuilder;
 
-    LinkedList<AddressNode> unmatchedOpenDataAddressNodes = new LinkedList<>();
+    LinkedList<HousingUnit> unmatchedHousingUnits = new LinkedList<>();
 
     public BagWfsLayerDownloader(OdsModule module) {
         super(module);
@@ -44,59 +39,39 @@ public class BagWfsLayerDownloader extends OpenDataLayerDownloader {
     public void initialize() throws OdsException {
         this.layerManager = module.getOpenDataLayerManager();
         addFeatureDownloader(createBuildingDownloader("bag:pand"));
-//        addFeatureDownloader(createDemolishedBuildingsDownloader());
         addFeatureDownloader(createBuildingDownloader("bag:ligplaats"));
         addFeatureDownloader(createBuildingDownloader("bag:standplaats"));
+//      addFeatureDownloader(createDemolishedBuildingsDownloader());
         addFeatureDownloader(createVerblijfsobjectDownloader());
         this.primitiveBuilder = new BagPrimitiveBuilder(module);
     }
 
-    
-    @Override
-    protected Collection<? extends Host> getHosts() {
-        return configuration.getHosts();
-    }
-
     @Override
     public void process() {
+        Thread.currentThread().setName("BagWfsLayerDownloader process");
         try {
             super.process();
-            matchAddressNodesToBuilding();
+            matchHousingUnitsToBuilding();
             checkBuildingCompleteness();
             distributeAddressNodes();
             analyzeBuildingTypes();
-//            findBuildingNeighbours(getResponse());
+//             findBuildingNeighbours(getResponse());
             primitiveBuilder.run(getResponse());
+            updateLayer();
         } catch (Exception e) {
             e.printStackTrace();
             throw e;
         }
     }
 
-//    private FeatureDownloader createPandDownloader() throws InitializationException {
-//        return createBuildingDownloader("bag:pand");
-//    }
-//    
-//    private FeatureDownloader createLigplaatsDownloader() throws InitializationException {
-//        return createBuildingDownloader("bag:ligplaats");
-//    }
-//    
-//    private FeatureDownloader createStandplaatsDownloader() throws InitializationException {
-//        return createBuildingDownloader("bag:standplaats");
-//    }
-//    
     private FeatureDownloader createVerblijfsobjectDownloader() throws OdsException {
-        BagGtAddressNodeBuilder entityBuilder = new BagGtAddressNodeBuilder(module.getCrsUtil());
         OdsDataSource dataSource = configuration.getDataSource("bag:verblijfsobject");
-        return new GtDownloader<>(dataSource, module.getCrsUtil(), entityBuilder, 
-            layerManager.getEntityStore(AddressNode.class));
+        return new GtDownloader<>(module, dataSource, HousingUnit.class);
     }
     
     private FeatureDownloader createBuildingDownloader(String featureType) throws OdsException {
-        BagGtBuildingBuilder entityBuilder = new BagGtBuildingBuilder(module.getCrsUtil());
         OdsDataSource dataSource = configuration.getDataSource(featureType);
-        FeatureDownloader downloader = new GtDownloader<>(dataSource, module.getCrsUtil(), entityBuilder, 
-            layerManager.getEntityStore(Building.class));
+        FeatureDownloader downloader = new GtDownloader<>(module, dataSource, Building.class);
         /*
          *  The original BAG import partially normalised the building geometries,
          * by making the (outer) rings clockwise. For fast comparison of geometries,
@@ -106,46 +81,45 @@ public class BagWfsLayerDownloader extends OpenDataLayerDownloader {
         return downloader;
     }
     
-    private FeatureDownloader createDemolishedBuildingsDownloader() throws OdsException {
-        BagGtBuildingBuilder entityBuilder = new BagGtBuildingBuilder(module.getCrsUtil());
-        OdsDataSource dataSource = configuration.getDataSource("osm_bag:buildingdestroyed_osm");
-        FeatureDownloader downloader = new GtDownloader<>(dataSource, module.getCrsUtil(), entityBuilder, 
-            layerManager.getEntityStore(Building.class));
-        /*
-         * The original BAG import partially normalised the building geometries,
-         * by making the (outer) rings clockwise. For fast comparison of geometries,
-         * I choose to override the default normalisation here.
-         */
-        downloader.setNormalisation(Normalisation.CLOCKWISE);
-        return downloader;
-    }
     
     /**
      * Find a matching building for foreign addressNodes. 
      */
-    private void matchAddressNodesToBuilding() {
-        OpenDataAddressNodeToBuildingMatcher matcher = new OpenDataAddressNodeToBuildingMatcher(module);
-        matcher.setUnmatchedAddressNodeHandler(unmatchedOpenDataAddressNodes::add);
-        for(AddressNode addressNode : layerManager.getEntityStore(AddressNode.class)) {
-            matcher.matchAddressToBuilding(addressNode);
+    private void matchHousingUnitsToBuilding() {
+        OpenDataHousingUnitToBuildingMatcher matcher = new OpenDataHousingUnitToBuildingMatcher(module);
+        matcher.setUnmatchedHousingUnitHandler(unmatchedHousingUnits::add);
+        for(HousingUnit housingUnit : layerManager.getRepository().getAll(HousingUnit.class)) {
+            matcher.matchHousingUnitToBuilding(housingUnit);
         }
     }
     
     private void checkBuildingCompleteness() {
-        OpenDataBuildingStore buildingStore = (OpenDataBuildingStore) layerManager.getEntityStore(Building.class);
-        Consumer<Building> enricher = new BuildingCompletenessEnricher(buildingStore);
-        buildingStore.forEach(enricher);
+        // TODO implement this. Move the data boundary from buildingStore 
+        // to layerManager (for the whole layer) or a bounding-box aware extension of EntityRepository.
+        Geometry boundary = layerManager.getBoundary();
+        Consumer<Building> enricher = new BuildingCompletenessEnricher(boundary);
+        for (Building building : layerManager.getRepository().getAll(Building.class)) {
+            enricher.accept(building);
+        }
     }
     
     private void distributeAddressNodes() {
-        OpenDataBuildingStore buildingStore = (OpenDataBuildingStore) layerManager.getEntityStore(Building.class);
-        Consumer<Building> enricher = new DistributeAddressNodes(module.getGeoUtil());
-        buildingStore.forEach(enricher);
+//        OpenDataBuildingStore buildingStore = (OpenDataBuildingStore) layerManager.getEntityStore(Building.class);
+//        Consumer<Building> enricher = new DistributeAddressNodes(module.getGeoUtil());
+//        buildingStore.forEach(enricher);
+//        Consumer<Building> enricher = new DistributeAddressNodes(module.getGeoUtil());
+//        for (Building building : layerManager.getRepository().getAll(Building.class)) {
+//            enricher.accept(building);
+//        }
     }
     
     private void analyzeBuildingTypes() {
-        OpenDataBuildingStore buildingStore = (OpenDataBuildingStore) layerManager.getEntityStore(Building.class);
+//        OpenDataBuildingStore buildingStore = (OpenDataBuildingStore) layerManager.getEntityStore(Building.class);
+//        Consumer<Building> enricher = new BuildingTypeEnricher();
+//        buildingStore.forEach(enricher);
         Consumer<Building> enricher = new BuildingTypeEnricher();
-        buildingStore.forEach(enricher);
+        for (Building building : layerManager.getRepository().getAll(Building.class)) {
+            enricher.accept(building);
+        }
     }
 }

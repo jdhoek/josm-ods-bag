@@ -45,5 +45,5 @@ public abstract class BagGtEntityBuilder<T extends Entity, T2 extends T> impleme
         return entity;
     }
 
-    protected abstract T2 newInstance();
+//    protected abstract T2 newInstance();
 }

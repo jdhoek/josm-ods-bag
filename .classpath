@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="org/openstreetmap/josm/plugins/ods/bag/BagImportModuleConfig.java|org/openstreetmap/josm/plugins/ods/bag/BagOpenDataPostDownloadProcessor.java|org/openstreetmap/josm/plugins/ods/bag/BagOsmLayerDownloader.java" kind="src" path="src/main/java"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+	<classpathentry excluding="org/openstreetmap/josm/plugins/ods/bag/BagImportModuleConfig.java|org/openstreetmap/josm/plugins/ods/bag/BagOpenDataPostDownloadProcessor.java|org/openstreetmap/josm/plugins/ods/bag/BagOsmLayerDownloader.java|org/openstreetmap/josm/plugins/ods/bag/gt/build/BagGtEntityBuilder.java|org/openstreetmap/josm/plugins/ods/bag/gt/build/BagGtCityBuilder.java|org/openstreetmap/josm/plugins/ods/bag/gt/build/BagGtBuildingBuilder.java|org/openstreetmap/josm/plugins/ods/bag/gt/build/BagGtAddressNodeBuilder.java|org/openstreetmap/josm/plugins/ods/bag/gt/build/BagBuildingTypeAnalyzer.java" kind="src" path="src/main/java"/>
 	<classpathentry kind="src" path="src/main/resources"/>
+	<classpathentry kind="src" path="src/test/resources"/>
+	<classpathentry kind="src" path="src/test/java"/>
 	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER">
 		<attributes>
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="josm-ods"/>
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
