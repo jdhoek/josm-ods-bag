@@ -87,6 +87,7 @@ public class BagEntityMapperFactory extends GtEntityMapperFactory {
         builder.addAttributeMapping("#ID", "primaryId");
         builder.addAttributeMapping("identificatie", "referenceId", new DoubleToLong());
         builder.addAttributeMapping("geometrie", "geometry", new CastingGeoTypeTransform<>(crs, Point.class));
+        builder.addAttributeMapping("status", "status", new AddressNodeStatusTransform());
         builder.addChildMapper(createAddressMapper(featureType), "address");
         return builder.build();
     }

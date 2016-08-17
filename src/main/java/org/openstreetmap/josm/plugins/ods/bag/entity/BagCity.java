@@ -1,5 +1,6 @@
 package org.openstreetmap.josm.plugins.ods.bag.entity;
 
+import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.plugins.ods.entities.actual.City;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -10,7 +11,6 @@ public class BagCity extends BagEntityImpl implements City {
     private String name;
     private MultiPolygon multiPolygon;
 
-    
     @Override
     public Class<City> getBaseType() {
         return City.class;
@@ -25,6 +25,11 @@ public class BagCity extends BagEntityImpl implements City {
         return name;
     }
 
+    public static boolean isCity(OsmPrimitive primitive) {
+        return "administrative".equals(primitive.get("boundary")) &&
+                "10".equals(primitive.get("admin_level"));
+    }
+    
     @Override
     public void setGeometry(Geometry geometry) {
         switch (geometry.getGeometryType()) {

@@ -11,12 +11,16 @@ import org.openstreetmap.josm.plugins.ods.bag.gt.build.BuildingTypeEnricher;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 import org.openstreetmap.josm.plugins.ods.entities.actual.HousingUnit;
 import org.openstreetmap.josm.plugins.ods.entities.enrichment.BuildingCompletenessEnricher;
+import org.openstreetmap.josm.plugins.ods.entities.enrichment.DistributeAddressNodes;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.FeatureDownloader;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.OpenDataLayerDownloader;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.OpenDataLayerManager;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 import org.openstreetmap.josm.plugins.ods.geotools.GtDownloader;
+import org.openstreetmap.josm.plugins.ods.io.DownloadResponse;
 import org.openstreetmap.josm.plugins.ods.matching.OpenDataHousingUnitToBuildingMatcher;
+import org.openstreetmap.josm.plugins.ods.osm.OsmNeighbourFinder;
+import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -55,12 +59,22 @@ public class BagWfsLayerDownloader extends OpenDataLayerDownloader {
             checkBuildingCompleteness();
             distributeAddressNodes();
             analyzeBuildingTypes();
-//             findBuildingNeighbours(getResponse());
+            findBuildingNeighbours(getResponse());
             primitiveBuilder.run(getResponse());
             updateLayer();
         } catch (Exception e) {
             e.printStackTrace();
             throw e;
+        }
+    }
+
+    private void findBuildingNeighbours(DownloadResponse response) {
+        OsmNeighbourFinder neighbourFinder = new OsmNeighbourFinder(module);
+        for (Building building :layerManager.getRepository().getAll(Building.class)) {
+            ManagedPrimitive<?> mPrimitive = building.getPrimitive();
+            if (mPrimitive != null) {
+                neighbourFinder.findNeighbours(mPrimitive);
+            }
         }
     }
 
@@ -104,19 +118,13 @@ public class BagWfsLayerDownloader extends OpenDataLayerDownloader {
     }
     
     private void distributeAddressNodes() {
-//        OpenDataBuildingStore buildingStore = (OpenDataBuildingStore) layerManager.getEntityStore(Building.class);
-//        Consumer<Building> enricher = new DistributeAddressNodes(module.getGeoUtil());
-//        buildingStore.forEach(enricher);
-//        Consumer<Building> enricher = new DistributeAddressNodes(module.getGeoUtil());
-//        for (Building building : layerManager.getRepository().getAll(Building.class)) {
-//            enricher.accept(building);
-//        }
+        Consumer<Building> enricher = new DistributeAddressNodes(module.getGeoUtil());
+        for (Building building : layerManager.getRepository().getAll(Building.class)) {
+            enricher.accept(building);
+        }
     }
     
     private void analyzeBuildingTypes() {
-//        OpenDataBuildingStore buildingStore = (OpenDataBuildingStore) layerManager.getEntityStore(Building.class);
-//        Consumer<Building> enricher = new BuildingTypeEnricher();
-//        buildingStore.forEach(enricher);
         Consumer<Building> enricher = new BuildingTypeEnricher();
         for (Building building : layerManager.getRepository().getAll(Building.class)) {
             enricher.accept(building);

@@ -18,13 +18,9 @@ public class BagPrimitiveBuilder extends PrimitiveBuilder {
 
     public BagPrimitiveBuilder(OdsModule module) {
         super(module);
-//        this.module = module;
         OpenDataLayerManager odLayerManager = module.getOpenDataLayerManager();
         register(Building.class, new BagBuildingEntityPrimitiveBuilder(odLayerManager));
         register(AddressNode.class, new BagAddressNodeEntityPrimitiveBuilder(odLayerManager));
-//        register(HousingUnit.class, new BagHousingUnitEntityPrimitiveBuilder(odLayerManager));
-//        buildingPrimitiveBuilder = new BagBuildingEntityPrimitiveBuilder(odLayerManager);
-//        addressNodePrimitiveBuilder = new BagAddressNodeEntityPrimitiveBuilder(odLayerManager);
         // TODO pass tolerance as a configurable parameter at a higher level.
  //       segmentSimplifier = new BuildingSegmentSimplifier(1e-5);
 //        buildingAligner = new BuildingAligner(module, odLayerManager.getEntityStore(Building.class));

@@ -17,7 +17,7 @@ import org.openstreetmap.josm.plugins.ods.bag.osm.build.BagOsmAddressNodeBuilder
 import org.openstreetmap.josm.plugins.ods.bag.osm.build.BagOsmBuildingBuilder;
 import org.openstreetmap.josm.plugins.ods.crs.CRSUtil;
 import org.openstreetmap.josm.plugins.ods.crs.CRSUtilProj4j;
-import org.openstreetmap.josm.plugins.ods.entities.GeoEntityRepository;
+import org.openstreetmap.josm.plugins.ods.entities.GeoRepository;
 import org.openstreetmap.josm.plugins.ods.entities.actual.AddressNode;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 import org.openstreetmap.josm.plugins.ods.entities.actual.HousingUnit;
@@ -38,7 +38,6 @@ public class BagImportModule extends OdsModule {
     private OdsModuleConfiguration configuration;
     // Boundary of the Netherlands
     private final static Bounds BOUNDS = new Bounds(50.734, 3.206, 53.583, 7.245);
-//    private final OdsDownloader odsDownloader;
     private final MainDownloader mainDownloader;
     private GeoUtil geoUtil = new GeoUtil();
     private CRSUtil crsUtil = new CRSUtilProj4j();
@@ -80,9 +79,7 @@ public class BagImportModule extends OdsModule {
     @Override
     protected OsmLayerManager createOsmLayerManager() {
         OsmLayerManager manager = new OsmLayerManager(this, "BAG OSM");
-//        manager.addEntityStore(Building.class, new OsmBuildingStore());
-//        manager.addEntityStore(AddressNode.class, new OsmAddressNodeStore());
-        GeoEntityRepository repository = manager.getRepository();
+        GeoRepository repository = manager.getRepository();
         repository.register(Building.class, "primaryId");
         repository.addIndex(Building.class, "referenceId");
         repository.addGeoIndex(Building.class, "geometry");
@@ -93,10 +90,7 @@ public class BagImportModule extends OdsModule {
     @Override
     protected OpenDataLayerManager createOpenDataLayerManager() {
         OpenDataLayerManager manager = new OpenDataLayerManager("BAG ODS");
-//        manager.addEntityStore(Building.class, new OpenDataBuildingStore());
-//        manager.addEntityStore(HousingUnit.class, new OpenDataHousingUnitStore());
-//        manager.addEntityStore(AddressNode.class, new OpenDataAddressNodeStore());
-        GeoEntityRepository repository = manager.getRepository();
+        GeoRepository repository = manager.getRepository();
         repository.register(Building.class, "primaryId");
         repository.addIndex(Building.class, "referenceId");
         repository.addGeoIndex(Building.class, "geometry");

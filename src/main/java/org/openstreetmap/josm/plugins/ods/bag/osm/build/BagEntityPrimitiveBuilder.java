@@ -24,7 +24,6 @@ public abstract class BagEntityPrimitiveBuilder<T extends Entity>
             ManagedPrimitive<?> primitive = getPrimitiveFactory().create(entity.getGeometry(), tags);
             entity.setPrimitive(primitive);
             primitive.setEntity(entity);
-//            layerManager.register(primitive, entity);
         }
     }
 

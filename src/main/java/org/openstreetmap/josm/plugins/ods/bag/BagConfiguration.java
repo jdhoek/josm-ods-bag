@@ -34,8 +34,11 @@ public class BagConfiguration extends AbstractModuleConfiguration {
     }
     
     private OdsDataSource createVboDataSource(GtFeatureSource featureSource) {
-        Query query = new GroupByQuery(featureSource, Arrays.asList("identificatie", "pandidentificatie"));
-        return new DefaultOdsDataSource(featureSource, query, entityMapperFactory);
+        Query query = new GroupByQuery(featureSource, Arrays.asList("identificatie"));
+        return new DefaultOdsDataSource(featureSource, query, entityMapperFactory,
+            Arrays.asList(new String[] {"identificatie", "openbare_ruimte", "huisnummer",
+                "huisletter", "toevoeging", "postcode", "woonplaats", "bouwjaar", "geometrie",
+                "gebruiksdoel", "status", "oppervlakte", "pandidentificatie"}));
     }
     
     private OdsDataSource createPandDataSource(GtFeatureSource featureSource) {

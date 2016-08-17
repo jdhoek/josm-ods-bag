@@ -17,8 +17,7 @@ public class BagHousingUnitEntityPrimitiveBuilder extends BagEntityPrimitiveBuil
         createAddressTags(housingUnit.getMainAddressNode().getAddress(), tags);
         tags.put("source", "BAG");
         LocalDate date = housingUnit.getSourceDate();
-        if (date != null) {
-            tags.put("source:date", date.toString());
-        }
+        if (date == null) date = LocalDate.now();
+        tags.put("source:date", date.toString());
     }
 }

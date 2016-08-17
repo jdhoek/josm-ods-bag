@@ -1,15 +1,18 @@
 package org.openstreetmap.josm.plugins.ods.bag.entity;
 
+import org.openstreetmap.josm.plugins.ods.entities.actual.AddressNode;
 import org.openstreetmap.josm.plugins.ods.entities.actual.impl.HousingUnitImpl;
 
 public class BagHousingUnit extends HousingUnitImpl {
     private String gebruiksdoel;
     private Double area;
     
-//    public void setAddress(BagAddress address) {
-//        super.setAddress(address);
-//    }
-//
+    @Override
+    public void setMainAddressNode(AddressNode addressNode) {
+        super.setMainAddressNode(addressNode);
+        addressNode.setHousingUnit(this);
+    }
+
     @Override
     public boolean isIncomplete() {
         if (getBuilding() != null) {

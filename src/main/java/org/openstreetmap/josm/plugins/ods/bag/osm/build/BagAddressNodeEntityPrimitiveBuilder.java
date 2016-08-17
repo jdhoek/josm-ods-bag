@@ -13,12 +13,11 @@ public class BagAddressNodeEntityPrimitiveBuilder extends BagEntityPrimitiveBuil
     }
 
     @Override
-    protected void buildTags(AddressNode addresNode, Map<String, String> tags) {
-        createAddressTags(addresNode.getAddress(), tags);
+    protected void buildTags(AddressNode addressNode, Map<String, String> tags) {
+        createAddressTags(addressNode.getAddress(), tags);
         tags.put("source", "BAG");
-        LocalDate date = addresNode.getSourceDate();
-        if (date != null) {
-            tags.put("source:date", date.toString());
-        }
+        LocalDate date = addressNode.getSourceDate();
+        if (date == null) date = LocalDate.now();
+        tags.put("source:date", date.toString());
     }
 }

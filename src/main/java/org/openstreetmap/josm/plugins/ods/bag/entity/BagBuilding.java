@@ -1,6 +1,5 @@
 package org.openstreetmap.josm.plugins.ods.bag.entity;
 
-import org.openstreetmap.josm.plugins.ods.entities.actual.AddressNode;
 import org.openstreetmap.josm.plugins.ods.entities.actual.impl.BuildingImpl;
 
 public class BagBuilding extends BuildingImpl {

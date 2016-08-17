@@ -34,9 +34,8 @@ public class BagBuildingEntityPrimitiveBuilder extends BagEntityPrimitiveBuilder
         }
         tags.put("source", "BAG");
         LocalDate date = building.getSourceDate();
-        if (date != null) {
-            tags.put("source:date", date.toString());
-        }
+        if (date == null) date = LocalDate.now();
+        tags.put("source:date", date.toString());
         tags.put("ref:bag", building.getReferenceId().toString());
         if (building.getStartDate() != null) {
             tags.put("start_date", building.getStartDate());
