@@ -16,6 +16,7 @@ public class BagCity extends BagEntityImpl implements City {
         return City.class;
     }
 
+    @Override
     public void setName(String name) {
         this.name = name;
     }

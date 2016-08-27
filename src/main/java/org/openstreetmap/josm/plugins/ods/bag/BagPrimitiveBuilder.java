@@ -5,7 +5,6 @@ import org.openstreetmap.josm.plugins.ods.bag.osm.build.BagAddressNodeEntityPrim
 import org.openstreetmap.josm.plugins.ods.bag.osm.build.BagBuildingEntityPrimitiveBuilder;
 import org.openstreetmap.josm.plugins.ods.entities.PrimitiveBuilder;
 import org.openstreetmap.josm.plugins.ods.entities.actual.AddressNode;
-import org.openstreetmap.josm.plugins.ods.entities.actual.HousingUnit;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.OpenDataLayerManager;
 

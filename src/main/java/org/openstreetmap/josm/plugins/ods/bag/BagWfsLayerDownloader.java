@@ -68,7 +68,7 @@ public class BagWfsLayerDownloader extends OpenDataLayerDownloader {
         }
     }
 
-    private void findBuildingNeighbours(DownloadResponse response) {
+    private void findBuildingNeighbours(@SuppressWarnings("unused") DownloadResponse response) {
         OsmNeighbourFinder neighbourFinder = new OsmNeighbourFinder(module);
         for (Building building :layerManager.getRepository().getAll(Building.class)) {
             ManagedPrimitive<?> mPrimitive = building.getPrimitive();

@@ -161,7 +161,7 @@ public class BagImportModule extends OdsModule {
             String user = userInfo.getDisplayName();
             String suffix = "_BAG";
             return user.endsWith(suffix);
-        } catch (@SuppressWarnings("unused") OsmTransferException e1) {
+        } catch (OsmTransferException e1) {
             Main.warn(tr("Failed to retrieve OSM user details from the server."));
             return false;
         }
