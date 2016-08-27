@@ -1,5 +1,6 @@
 package org.openstreetmap.josm.plugins.ods.bag.gt.build;
 
+import java.math.BigDecimal;
 import java.util.function.Function;
 
 import org.geotools.data.DataStore;
@@ -26,7 +27,6 @@ import org.openstreetmap.josm.plugins.ods.properties.transform.CastingGeoTypeTra
 import org.openstreetmap.josm.plugins.ods.properties.transform.GeoTypeTransform;
 import org.openstreetmap.josm.plugins.ods.properties.transform.SimpleTypeTransform;
 import org.openstreetmap.josm.plugins.ods.properties.transform.TypeTransform;
-import org.openstreetmap.josm.plugins.ods.properties.transform.TypeTransforms.DoubleToLong;
 import org.openstreetmap.josm.plugins.ods.wfs.WFSHost;
 
 import com.vividsolutions.jts.geom.Point;
@@ -60,7 +60,7 @@ public class BagEntityMapperFactory extends GtEntityMapperFactory {
 
 
     public SimpleEntityMapper<SimpleFeature, BagBuilding> createBuildingMapper() throws OdsException {
-        SimpleFeatureType featureType = getFeatureType("pand");
+        SimpleFeatureType featureType = getFeatureType("bag:pand");
         CoordinateReferenceSystem crs = featureType.getCoordinateReferenceSystem();
         EntityType<SimpleFeature> sourceType = new SimpleFeatureEntityType(featureType);
         EntityType<BagBuilding> targetType = new PojoEntityType<>(BagBuilding.class);
@@ -68,7 +68,7 @@ public class BagEntityMapperFactory extends GtEntityMapperFactory {
             new EntityMapperBuilder<>(sourceType, targetType);
         builder.setFactory(new SimpleEntityFactory<>(BagBuilding.class));
         builder.addAttributeMapping("#ID", "primaryId");
-        builder.addAttributeMapping("identificatie", "referenceId", new DoubleToLong());
+        builder.addAttributeMapping("identificatie", "referenceId", new SimpleTypeTransform<>(BigDecimal.class, Long.class, BigDecimal::longValue));
         builder.addAttributeMapping("status", "status", new PandStatusTransform());
         builder.addAttributeMapping("bouwjaar", "startDate", new BouwjaarTransform());
         builder.addAttributeMapping("geometrie", "geometry", new GeoTypeTransform(crs));
@@ -85,7 +85,7 @@ public class BagEntityMapperFactory extends GtEntityMapperFactory {
             new EntityMapperBuilder<>(sourceType, targetType);
         builder.setFactory(new SimpleEntityFactory<>(AddressNodeImpl.class));
         builder.addAttributeMapping("#ID", "primaryId");
-        builder.addAttributeMapping("identificatie", "referenceId", new DoubleToLong());
+        builder.addAttributeMapping("identificatie", "referenceId", new SimpleTypeTransform<>(BigDecimal.class, Long.class, BigDecimal::longValue));
         builder.addAttributeMapping("geometrie", "geometry", new CastingGeoTypeTransform<>(crs, Point.class));
         builder.addAttributeMapping("status", "status", new AddressNodeStatusTransform());
         builder.addChildMapper(createAddressMapper(featureType), "address");
@@ -93,7 +93,7 @@ public class BagEntityMapperFactory extends GtEntityMapperFactory {
     }
 
     public SimpleEntityMapper<SimpleFeature, BagHousingUnit> createHousingUnitMapper() throws OdsException {
-        SimpleFeatureType featureType = getFeatureType("verblijfsobject");
+        SimpleFeatureType featureType = getFeatureType("bag:verblijfsobject");
         CoordinateReferenceSystem crs = featureType.getCoordinateReferenceSystem();
         EntityType<SimpleFeature> sourceType = new SimpleFeatureEntityType(featureType);
         EntityType<BagHousingUnit> targetType = new PojoEntityType<>(BagHousingUnit.class);
@@ -101,12 +101,12 @@ public class BagEntityMapperFactory extends GtEntityMapperFactory {
             new EntityMapperBuilder<>(sourceType, targetType);
         builder.setFactory(new SimpleEntityFactory<>(BagHousingUnit.class));
         builder.addAttributeMapping("#ID", "primaryId");
-        builder.addAttributeMapping("identificatie", "referenceId", new DoubleToLong());
+        builder.addAttributeMapping("identificatie", "referenceId", new SimpleTypeTransform<>(BigDecimal.class, Long.class, BigDecimal::longValue));
         builder.addAttributeMapping("gebruiksdoel", "gebruiksdoel");
-        builder.addAttributeMapping("oppervlakte", "area");
+        builder.addAttributeMapping("oppervlakte", "area", new SimpleTypeTransform<>(BigDecimal.class, Double.class, BigDecimal::doubleValue));
         builder.addAttributeMapping("status", "status", new AddressNodeStatusTransform());
         builder.addAttributeMapping("gebruiksdoel", "type", new BuildingTypeTransform());
-        builder.addAttributeMapping("pandidentificatie", "buildingRef", new DoubleToLong());
+        builder.addAttributeMapping("pandidentificatie", "buildingRef", new SimpleTypeTransform<>(BigDecimal.class, Long.class, BigDecimal::longValue));
         builder.addAttributeMapping("geometrie", "geometry", new CastingGeoTypeTransform<>(crs, Point.class));
         builder.addConstant("source", "BAG");
         builder.addChildMapper(createAddressNodeMapper(featureType), "mainAddressNode");
@@ -114,7 +114,7 @@ public class BagEntityMapperFactory extends GtEntityMapperFactory {
     }
 
     public SimpleEntityMapper<SimpleFeature, BagBuilding> createLigplaatsMapper() throws OdsException {
-        SimpleFeatureType featureType = getFeatureType("ligplaats");
+        SimpleFeatureType featureType = getFeatureType("bag:ligplaats");
         CoordinateReferenceSystem crs = featureType.getCoordinateReferenceSystem();
         EntityType<SimpleFeature> sourceType = new SimpleFeatureEntityType(featureType);
         EntityType<BagBuilding> targetType = new PojoEntityType<>(BagBuilding.class);
@@ -122,7 +122,7 @@ public class BagEntityMapperFactory extends GtEntityMapperFactory {
             new EntityMapperBuilder<>(sourceType, targetType);
         builder.setFactory(new SimpleEntityFactory<>(BagBuilding.class));
         builder.addAttributeMapping("#ID", "primaryId");
-        builder.addAttributeMapping("identificatie", "referenceId", new DoubleToLong());
+        builder.addAttributeMapping("identificatie", "referenceId", new SimpleTypeTransform<>(BigDecimal.class, Long.class, BigDecimal::longValue));
         builder.addAttributeMapping("status", "status", new PandStatusTransform());
         builder.addAttributeMapping("geometrie", "geometry", new GeoTypeTransform(crs));
         builder.addConstant("source", "BAG");
@@ -132,7 +132,7 @@ public class BagEntityMapperFactory extends GtEntityMapperFactory {
     }
 
     public SimpleEntityMapper<SimpleFeature, BagBuilding> createStandplaatsMapper() throws OdsException {
-        SimpleFeatureType featureType = getFeatureType("standplaats");
+        SimpleFeatureType featureType = getFeatureType("bag:standplaats");
         CoordinateReferenceSystem crs = featureType.getCoordinateReferenceSystem();
         EntityType<SimpleFeature> sourceType = new SimpleFeatureEntityType(featureType);
         EntityType<BagBuilding> targetType = new PojoEntityType<>(BagBuilding.class);
@@ -140,7 +140,7 @@ public class BagEntityMapperFactory extends GtEntityMapperFactory {
             new EntityMapperBuilder<>(sourceType, targetType);
         builder.setFactory(new SimpleEntityFactory<>(BagBuilding.class));
         builder.addAttributeMapping("#ID", "primaryId");
-        builder.addAttributeMapping("identificatie", "referenceId", new DoubleToLong());
+        builder.addAttributeMapping("identificatie", "referenceId", new SimpleTypeTransform<>(BigDecimal.class, Long.class, BigDecimal::longValue));
         builder.addAttributeMapping("status", "status", new PandStatusTransform());
         builder.addAttributeMapping("geometrie", "geometry", new GeoTypeTransform(crs));
         builder.addConstant("source", "BAG");
@@ -155,7 +155,7 @@ public class BagEntityMapperFactory extends GtEntityMapperFactory {
         EntityMapperBuilder<SimpleFeature, BagAddress> builder =
             new EntityMapperBuilder<>(sourceType, targetType);
         builder.setFactory(new SimpleEntityFactory<>(BagAddress.class));
-        builder.addAttributeMapping("huisnummer", "houseNumber", new SimpleTypeTransform<>(Double.class, Integer.class, Double::intValue));
+        builder.addAttributeMapping("huisnummer", "houseNumber", new SimpleTypeTransform<>(BigDecimal.class, Integer.class, BigDecimal::intValue));
         builder.addAttributeMapping("huisletter", "houseLetter", new HouseLetterTransform());
         builder.addAttributeMapping("toevoeging", "houseNumberExtra");
         builder.addAttributeMapping("postcode", "postcode");
@@ -263,14 +263,14 @@ public class BagEntityMapperFactory extends GtEntityMapperFactory {
         }
     }
 
-    private static class BouwjaarTransform implements TypeTransform<Double, String> {
+    private static class BouwjaarTransform implements TypeTransform<BigDecimal, String> {
         public BouwjaarTransform() {
             super();
         }
 
         @Override
-        public Class<Double> getSourceType() {
-            return Double.class;
+        public Class<BigDecimal> getSourceType() {
+            return BigDecimal.class;
         }
 
         @Override
@@ -279,12 +279,12 @@ public class BagEntityMapperFactory extends GtEntityMapperFactory {
         }
 
         @Override
-        public Function<Double, String> getFunction() {
+        public Function<BigDecimal, String> getFunction() {
             return null;
         }
 
         @Override
-        public String apply(Double bouwjaar) {
+        public String apply(BigDecimal bouwjaar) {
             if (bouwjaar == null) {
                 return null;
             }
