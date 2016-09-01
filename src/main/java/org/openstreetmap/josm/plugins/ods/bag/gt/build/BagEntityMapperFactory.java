@@ -28,6 +28,7 @@ import org.openstreetmap.josm.plugins.ods.properties.transform.GeoTypeTransform;
 import org.openstreetmap.josm.plugins.ods.properties.transform.SimpleTypeTransform;
 import org.openstreetmap.josm.plugins.ods.properties.transform.TypeTransform;
 import org.openstreetmap.josm.plugins.ods.wfs.WFSHost;
+import org.openstreetmap.josm.tools.I18n;
 
 import com.vividsolutions.jts.geom.Point;
 
@@ -54,7 +55,7 @@ public class BagEntityMapperFactory extends GtEntityMapperFactory {
         case "bag:standplaats":
             return createStandplaatsMapper();
         default:
-            throw new OdsException(String.format("There is no entity mapper for feature '%s'", feature));
+            throw new OdsException(I18n.tr("There is no entity mapper for feature ''{0}''", feature));
         }
     }
 

@@ -1,6 +1,7 @@
 package org.openstreetmap.josm.plugins.ods.bag;
 
 import java.util.LinkedList;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
 import org.openstreetmap.josm.plugins.ods.Normalisation;
@@ -51,7 +52,7 @@ public class BagWfsLayerDownloader extends OpenDataLayerDownloader {
     }
 
     @Override
-    public void process() {
+    public void process() throws ExecutionException {
         Thread.currentThread().setName("BagWfsLayerDownloader process");
         try {
             super.process();
@@ -64,7 +65,7 @@ public class BagWfsLayerDownloader extends OpenDataLayerDownloader {
             updateLayer();
         } catch (Exception e) {
             e.printStackTrace();
-            throw e;
+            throw new ExecutionException(e.getMessage(), e);
         }
     }
 
