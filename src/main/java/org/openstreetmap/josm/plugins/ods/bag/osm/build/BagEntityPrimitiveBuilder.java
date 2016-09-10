@@ -21,7 +21,7 @@ public abstract class BagEntityPrimitiveBuilder<T extends Entity>
         if (entity.getPrimitive() == null && entity.getGeometry() != null) {
             Map<String, String> tags = new HashMap<>();
             buildTags(entity, tags);
-            ManagedPrimitive<?> primitive = getPrimitiveFactory().create(entity.getGeometry(), tags);
+            ManagedPrimitive primitive = getPrimitiveFactory().create(entity.getGeometry(), tags);
             entity.setPrimitive(primitive);
             primitive.setEntity(entity);
         }

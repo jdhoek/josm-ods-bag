@@ -23,7 +23,7 @@ public class BagOsmBuildingBuilder extends AbstractOsmBuildingBuilder {
     }
 
     @Override
-    protected void normalizeTags(ManagedPrimitive<?> primitive) {
+    protected void normalizeTags(ManagedPrimitive primitive) {
         return;
     }
 

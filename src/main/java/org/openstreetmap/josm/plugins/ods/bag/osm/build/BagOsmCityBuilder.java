@@ -54,7 +54,7 @@ public class BagOsmCityBuilder extends AbstractOsmCityBuilder {
     }
 
     @Override
-    protected void normalizeTags(ManagedPrimitive<?> primitive) {
+    protected void normalizeTags(ManagedPrimitive primitive) {
         return;
     }
     
