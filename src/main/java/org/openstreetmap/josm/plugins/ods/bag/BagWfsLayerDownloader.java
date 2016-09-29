@@ -4,6 +4,10 @@ import java.util.LinkedList;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
+import org.openstreetmap.josm.data.DataSource;
+import org.openstreetmap.josm.data.osm.DataSet;
+import org.openstreetmap.josm.data.osm.Node;
+import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.ods.Normalisation;
 import org.openstreetmap.josm.plugins.ods.OdsDataSource;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
@@ -56,12 +60,12 @@ public class BagWfsLayerDownloader extends OpenDataLayerDownloader {
         Thread.currentThread().setName("BagWfsLayerDownloader process");
         try {
             super.process();
+            primitiveBuilder.run(getResponse());
             matchHousingUnitsToBuilding();
             checkBuildingCompleteness();
             distributeAddressNodes();
             analyzeBuildingTypes();
             findBuildingNeighbours(getResponse());
-            primitiveBuilder.run(getResponse());
             updateLayer();
         } catch (Exception e) {
             e.printStackTrace();
@@ -109,8 +113,6 @@ public class BagWfsLayerDownloader extends OpenDataLayerDownloader {
     }
     
     private void checkBuildingCompleteness() {
-        // TODO implement this. Move the data boundary from buildingStore 
-        // to layerManager (for the whole layer) or a bounding-box aware extension of EntityRepository.
         Geometry boundary = layerManager.getBoundary();
         Consumer<Building> enricher = new BuildingCompletenessEnricher(boundary);
         for (Building building : layerManager.getRepository().getAll(Building.class)) {
@@ -119,7 +121,7 @@ public class BagWfsLayerDownloader extends OpenDataLayerDownloader {
     }
     
     private void distributeAddressNodes() {
-        Consumer<Building> enricher = new DistributeAddressNodes(module.getGeoUtil());
+        Consumer<Building> enricher = new DistributeAddressNodes();
         for (Building building : layerManager.getRepository().getAll(Building.class)) {
             enricher.accept(building);
         }

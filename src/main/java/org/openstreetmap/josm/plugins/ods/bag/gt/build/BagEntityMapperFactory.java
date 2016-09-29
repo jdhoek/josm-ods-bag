@@ -73,7 +73,7 @@ public class BagEntityMapperFactory extends GtEntityMapperFactory {
         builder.addAttributeMapping("status", "status", new PandStatusTransform());
         builder.addAttributeMapping("bouwjaar", "startDate", new BouwjaarTransform());
         builder.addAttributeMapping("geometrie", "geometry", new GeoTypeTransform(crs));
-        builder.addConstant("buildingType", BuildingType.OTHER);
+        builder.addConstant("buildingType", BuildingType.UNCLASSIFIED);
         builder.addConstant("source", "BAG");
         return builder.build();
     }

@@ -1,12 +1,12 @@
 package org.openstreetmap.josm.plugins.ods.bag.osm.build;
 
 import java.time.LocalDate;
-import java.util.Map;
 
 import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.entities.EntityStatus;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Address;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
+import org.openstreetmap.josm.plugins.ods.util.OdsTagMap;
 
 public class BagBuildingEntityPrimitiveBuilder extends BagEntityPrimitiveBuilder<Building> {
 
@@ -27,7 +27,7 @@ public class BagBuildingEntityPrimitiveBuilder extends BagEntityPrimitiveBuilder
 
 
     @Override
-    protected void buildTags(Building building, Map<String, String> tags) {
+    protected void buildTags(Building building, OdsTagMap tags) {
         Address address = building.getAddress();
         if (address != null) {
             createAddressTags(address, tags);
@@ -43,54 +43,12 @@ public class BagBuildingEntityPrimitiveBuilder extends BagEntityPrimitiveBuilder
         if ("Sloopvergunning verleend".equals(building.getStatus())) {
             tags.put("note", "Sloopvergunning verleend");
         }
-        String type = "yes";
-        switch (building.getBuildingType()) {
-        case APARTMENTS:
-            type = "apartments";
-            break;
-        case GARAGE:
-            type = "garage";
-            break;
-        case HOUSE:
-            type = "house";
-            break;
-        case HOUSEBOAT:
-            type = "houseboat";
-            tags.put("floating", "yes");
-            break;
-        case INDUSTRIAL:
-            type = "industrial";
-            break;
-        case OFFICE:
-            type = "office";
-            break;
-        case PRISON:
-            tags.put("amenity", "prison");
-            break;
-        case RETAIL:
-            type = "retail";
-            break;
-        case STATIC_CARAVAN:
-            type = "static_caravan";
-            break;
-        case SUBSTATION:
-            tags.put("power", "substation");
-            break;
-        case OTHER:
-            type = building.getBuildingType().getSubType();
-            break;
-        default:
-            type = "yes";
-            break;
-        }
-        
+        tags.putAll(building.getBuildingType().getTags());
         if (building.getStatus().equals(EntityStatus.CONSTRUCTION) ||
                 building.getStatus().equals(EntityStatus.PLANNED)) {
+            String type = tags.get("building");
             tags.put("building", "construction");
             tags.put("construction", type);
-        }
-        else {
-            tags.put("building", type);
         }
     }
 }

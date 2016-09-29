@@ -11,6 +11,7 @@ import org.openstreetmap.josm.plugins.ods.bag.gt.build.BuildingTypeEnricher.Stat
 import org.openstreetmap.josm.plugins.ods.entities.actual.AddressNode;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 import org.openstreetmap.josm.plugins.ods.entities.actual.BuildingType;
+import static org.openstreetmap.josm.plugins.ods.entities.actual.BuildingType.*;
 import org.openstreetmap.josm.plugins.ods.entities.actual.HousingUnit;
 
 public class BuildingTypeEnricher implements Consumer<Building> {
@@ -48,16 +49,15 @@ public class BuildingTypeEnricher implements Consumer<Building> {
         Stat largest = stats.getLargest();
         BuildingType type = BuildingType.UNCLASSIFIED;
         if (largest.percentage > 0.75) {
-            switch (largest.type) {
-            case HOUSE:
-                type = BuildingType.APARTMENTS;
-                break;
-            case PRISON:
-            case RETAIL:
-            case OFFICE:
+            if (largest.type == BuildingType.HOUSE) {
+                type = APARTMENTS;
+            }
+            else if (largest.type == PRISON ||
+                largest.type == RETAIL ||
+                largest.type == OFFICE) {
                 type = largest.type;
-                break;
-            default:
+            }
+            else {
                 type = BuildingType.UNCLASSIFIED;
             }
         }

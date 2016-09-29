@@ -1,10 +1,10 @@
 package org.openstreetmap.josm.plugins.ods.bag.osm.build;
 
 import java.time.LocalDate;
-import java.util.Map;
 
 import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.entities.actual.HousingUnit;
+import org.openstreetmap.josm.plugins.ods.util.OdsTagMap;
 
 public class BagHousingUnitEntityPrimitiveBuilder extends BagEntityPrimitiveBuilder<HousingUnit> {
 
@@ -13,7 +13,7 @@ public class BagHousingUnitEntityPrimitiveBuilder extends BagEntityPrimitiveBuil
     }
 
     @Override
-    protected void buildTags(HousingUnit housingUnit, Map<String, String> tags) {
+    protected void buildTags(HousingUnit housingUnit, OdsTagMap tags) {
         createAddressTags(housingUnit.getMainAddressNode().getAddress(), tags);
         tags.put("source", "BAG");
         LocalDate date = housingUnit.getSourceDate();

@@ -1,6 +1,5 @@
 package org.openstreetmap.josm.plugins.ods.bag.osm.build;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.openstreetmap.josm.plugins.ods.LayerManager;
@@ -8,6 +7,7 @@ import org.openstreetmap.josm.plugins.ods.entities.AbstractEntityPrimitiveBuilde
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Address;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
+import org.openstreetmap.josm.plugins.ods.util.OdsTagMap;
 
 public abstract class BagEntityPrimitiveBuilder<T extends Entity>
     extends AbstractEntityPrimitiveBuilder<T> {
@@ -19,7 +19,7 @@ public abstract class BagEntityPrimitiveBuilder<T extends Entity>
     @Override
     public void createPrimitive(T entity) {
         if (entity.getPrimitive() == null && entity.getGeometry() != null) {
-            Map<String, String> tags = new HashMap<>();
+            OdsTagMap tags = new OdsTagMap();
             buildTags(entity, tags);
             ManagedPrimitive primitive = getPrimitiveFactory().create(entity.getGeometry(), tags);
             entity.setPrimitive(primitive);
@@ -27,7 +27,7 @@ public abstract class BagEntityPrimitiveBuilder<T extends Entity>
         }
     }
 
-    protected abstract void buildTags(T entity, Map<String, String> tags);
+    protected abstract void buildTags(T entity, OdsTagMap tags);
     
     public static void createAddressTags(Address address, Map<String, String> tags) {
         if (address.getStreetName() != null) {

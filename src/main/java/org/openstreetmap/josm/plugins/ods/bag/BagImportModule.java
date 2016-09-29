@@ -4,6 +4,7 @@ import static org.openstreetmap.josm.tools.I18n.tr;
 
 import javax.swing.JOptionPane;
 
+import org.geotools.referencing.operation.builder.BursaWolfTransformBuilder;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.data.osm.UserInfo;
@@ -21,9 +22,11 @@ import org.openstreetmap.josm.plugins.ods.entities.GeoRepository;
 import org.openstreetmap.josm.plugins.ods.entities.actual.AddressNode;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 import org.openstreetmap.josm.plugins.ods.entities.actual.HousingUnit;
+import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.BuildingPassageAction;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.OpenDataLayerManager;
 import org.openstreetmap.josm.plugins.ods.entities.osm.OsmLayerManager;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
+import org.openstreetmap.josm.plugins.ods.gui.AlignBuildingAction;
 import org.openstreetmap.josm.plugins.ods.gui.OdsDownloadAction;
 import org.openstreetmap.josm.plugins.ods.gui.OdsResetAction;
 import org.openstreetmap.josm.plugins.ods.gui.OdsUpdateAction;
@@ -72,7 +75,9 @@ public class BagImportModule extends OdsModule {
 //        addAction(new RemoveAssociatedStreetsAction(this));
 //        addAction(new OdsImportAction(this));
         addAction(new OdsUpdateAction(this));
+        addAction(new BuildingPassageAction(this));
         addAction(new UpdateGeometryAction(this));
+        addAction(new AlignBuildingAction(this));
         addAction(new OdsResetAction(this));
 //        actions.add(new AlignBuildingsAction(this));
 //        actions.add(new RemoveShortSegmentsAction(this));
