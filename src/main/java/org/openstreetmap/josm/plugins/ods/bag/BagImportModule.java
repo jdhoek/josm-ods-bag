@@ -4,7 +4,6 @@ import static org.openstreetmap.josm.tools.I18n.tr;
 
 import javax.swing.JOptionPane;
 
-import org.geotools.referencing.operation.builder.BursaWolfTransformBuilder;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.data.osm.UserInfo;
@@ -34,7 +33,7 @@ import org.openstreetmap.josm.plugins.ods.gui.UpdateGeometryAction;
 import org.openstreetmap.josm.plugins.ods.io.MainDownloader;
 import org.openstreetmap.josm.plugins.ods.io.OsmLayerDownloader;
 import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
-import org.openstreetmap.josm.plugins.ods.matching.AddressNodeMatcher;
+import org.openstreetmap.josm.plugins.ods.matching.AddressableMatcher;
 import org.openstreetmap.josm.plugins.ods.matching.BuildingMatcher;
 import org.openstreetmap.josm.tools.I18n;
 
@@ -56,7 +55,7 @@ public class BagImportModule extends OdsModule {
         downloader.setOpenDataLayerDownloader(new BagWfsLayerDownloader(this));
         downloader.setOsmLayerDownloader(new OsmLayerDownloader(this));
         downloader.addMatcher(new BuildingMatcher(this));
-        downloader.addMatcher(new AddressNodeMatcher(this));
+        downloader.addMatcher(new AddressableMatcher(this));
         return downloader;
     }
 
