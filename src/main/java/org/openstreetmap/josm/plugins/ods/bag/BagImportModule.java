@@ -54,8 +54,6 @@ public class BagImportModule extends OdsModule {
         MainDownloader downloader = new MainDownloader(this);
         downloader.setOpenDataLayerDownloader(new BagWfsLayerDownloader(this));
         downloader.setOsmLayerDownloader(new OsmLayerDownloader(this));
-        downloader.addMatcher(new BuildingMatcher(this));
-        downloader.addMatcher(new AddressableMatcher(this));
         return downloader;
     }
 
@@ -68,6 +66,9 @@ public class BagImportModule extends OdsModule {
     public void initialize() throws OdsException {
         super.initialize();
         mainDownloader.initialize();
+        getMatcherManager().registerMatcher(new BuildingMatcher(this));
+        getMatcherManager().registerMatcher(new AddressableMatcher(this));
+
         addOsmEntityBuilder(new BagOsmBuildingBuilder(this));
         addOsmEntityBuilder(new BagOsmAddressNodeBuilder(this));
         addAction(new OdsDownloadAction(this));

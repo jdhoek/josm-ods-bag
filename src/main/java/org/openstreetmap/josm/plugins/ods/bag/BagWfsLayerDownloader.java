@@ -4,10 +4,6 @@ import java.util.LinkedList;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
-import org.openstreetmap.josm.data.DataSource;
-import org.openstreetmap.josm.data.osm.DataSet;
-import org.openstreetmap.josm.data.osm.Node;
-import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.ods.Normalisation;
 import org.openstreetmap.josm.plugins.ods.OdsDataSource;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
@@ -22,10 +18,7 @@ import org.openstreetmap.josm.plugins.ods.entities.opendata.OpenDataLayerDownloa
 import org.openstreetmap.josm.plugins.ods.entities.opendata.OpenDataLayerManager;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 import org.openstreetmap.josm.plugins.ods.geotools.GtDownloader;
-import org.openstreetmap.josm.plugins.ods.io.DownloadResponse;
 import org.openstreetmap.josm.plugins.ods.matching.OpenDataHousingUnitToBuildingMatcher;
-import org.openstreetmap.josm.plugins.ods.osm.OsmNeighbourFinder;
-import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -65,21 +58,11 @@ public class BagWfsLayerDownloader extends OpenDataLayerDownloader {
             checkBuildingCompleteness();
             distributeAddressNodes();
             analyzeBuildingTypes();
-            findBuildingNeighbours(getResponse());
+//            findBuildingNeighbours(getResponse());
             updateLayer();
         } catch (Exception e) {
             e.printStackTrace();
             throw new ExecutionException(e.getMessage(), e);
-        }
-    }
-
-    private void findBuildingNeighbours(@SuppressWarnings("unused") DownloadResponse response) {
-        OsmNeighbourFinder neighbourFinder = new OsmNeighbourFinder(module);
-        for (Building building :layerManager.getRepository().getAll(Building.class)) {
-            ManagedPrimitive mPrimitive = building.getPrimitive();
-            if (mPrimitive != null) {
-                neighbourFinder.findNeighbours(mPrimitive);
-            }
         }
     }
 

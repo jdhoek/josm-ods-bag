@@ -1,15 +1,14 @@
 package org.openstreetmap.josm.plugins.ods.bag;
 
 import java.util.Arrays;
-import java.util.List;
 
 import org.geotools.data.Query;
 import org.openstreetmap.josm.plugins.ods.AbstractModuleConfiguration;
 import org.openstreetmap.josm.plugins.ods.DefaultOdsDataSource;
 import org.openstreetmap.josm.plugins.ods.OdsDataSource;
 import org.openstreetmap.josm.plugins.ods.bag.gt.build.BagEntityMapperFactory;
-import org.openstreetmap.josm.plugins.ods.geotools.GroupByQuery;
 import org.openstreetmap.josm.plugins.ods.geotools.GtFeatureSource;
+import org.openstreetmap.josm.plugins.ods.geotools.UniqueIdQuery;
 import org.openstreetmap.josm.plugins.ods.wfs.WFSHost;
 
 public class BagConfiguration extends AbstractModuleConfiguration {
@@ -35,10 +34,10 @@ public class BagConfiguration extends AbstractModuleConfiguration {
     }
     
     private OdsDataSource createVboDataSource(GtFeatureSource featureSource) {
-        List<String> properties = Arrays.asList("identificatie", "oppervlakte", "status", "gebruiksdoel",
+        String[] properties = new String[] {"identificatie", "oppervlakte", "status", "gebruiksdoel",
             "openbare_ruimte", "huisnummer", "huisletter", "toevoeging", "postcode", "woonplaats",
-            "geometrie", "pandidentificatie");
-        Query query = new GroupByQuery(featureSource, properties, Arrays.asList("identificatie"));
+            "geometrie", "pandidentificatie"};
+        Query query = new UniqueIdQuery(featureSource, properties, "identificatie");
         return new DefaultOdsDataSource(featureSource, query, entityMapperFactory,
             Arrays.asList(new String[] {"identificatie", "openbare_ruimte", "huisnummer",
                 "huisletter", "toevoeging", "postcode", "woonplaats", "bouwjaar", "geometrie",
@@ -46,22 +45,22 @@ public class BagConfiguration extends AbstractModuleConfiguration {
     }
     
     private OdsDataSource createPandDataSource(GtFeatureSource featureSource) {
-        List<String> properties = Arrays.asList("identificatie", "bouwjaar", "status", "aantal_verblijfsobjecten", "geometrie");
-        Query query = new GroupByQuery(featureSource, properties, Arrays.asList("identificatie"));
+        String[] properties = new String[] {"identificatie", "bouwjaar", "status", "geometrie"};
+        Query query = new UniqueIdQuery(featureSource, properties, "identificatie");
         return new DefaultOdsDataSource(featureSource, query, entityMapperFactory);
     }
     
     private OdsDataSource createLigplaatsDataSource(GtFeatureSource featureSource) {
-        List<String> properties = Arrays.asList("identificatie", "status", "openbare_ruimte", "huisnummer",
-            "huisletter", "toevoeging", "postcode", "woonplaats", "geometrie");
-        Query query = new GroupByQuery(featureSource, properties, Arrays.asList("identificatie"));
+        String[] properties = new String[] {"identificatie", "status", "openbare_ruimte", "huisnummer",
+            "huisletter", "toevoeging", "postcode", "woonplaats", "geometrie"};
+        Query query = new UniqueIdQuery(featureSource, properties, "identificatie");
         return new DefaultOdsDataSource(featureSource, query, entityMapperFactory);
     }
     
     private OdsDataSource createStandplaatsDataSource(GtFeatureSource featureSource) {
-        List<String> properties = Arrays.asList("identificatie", "status", "openbare_ruimte", "huisnummer",
-            "huisletter", "toevoeging", "postcode", "woonplaats", "geometrie");
-        Query query = new GroupByQuery(featureSource, properties, Arrays.asList("identificatie"));
+        String[] properties = new String[] {"identificatie", "status", "openbare_ruimte", "huisnummer",
+            "huisletter", "toevoeging", "postcode", "woonplaats", "geometrie"};
+        Query query = new UniqueIdQuery(featureSource, properties, "identificatie");
         return new DefaultOdsDataSource(featureSource, query, entityMapperFactory);
     }
 }

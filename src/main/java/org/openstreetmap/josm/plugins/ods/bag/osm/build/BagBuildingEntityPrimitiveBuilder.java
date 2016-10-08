@@ -14,12 +14,13 @@ public class BagBuildingEntityPrimitiveBuilder extends BagEntityPrimitiveBuilder
         super(dataLayer, Building.class);
     }
 
+    //TODO Implement this using a predicate in stead.
     @Override
     public void createPrimitive(Building building) {
         // Ignore buildings with status "Bouwvergunning verleend"
         // Make an exception for buildings that already exist in OSM. In that case, the building permit is for reconstruction
         if ("Bouwvergunning verleend".equals(building.getStatus())
-                && building.getMatch() == null) {
+                && building.getMatch(building.getBaseType()) == null) {
             return;
         }
         super.createPrimitive(building);
