@@ -29,7 +29,6 @@ import org.openstreetmap.josm.plugins.ods.gui.AlignBuildingAction;
 import org.openstreetmap.josm.plugins.ods.gui.OdsDownloadAction;
 import org.openstreetmap.josm.plugins.ods.gui.OdsResetAction;
 import org.openstreetmap.josm.plugins.ods.gui.OdsUpdateAction;
-import org.openstreetmap.josm.plugins.ods.gui.UpdateGeometryAction;
 import org.openstreetmap.josm.plugins.ods.io.MainDownloader;
 import org.openstreetmap.josm.plugins.ods.io.OsmLayerDownloader;
 import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
@@ -76,7 +75,7 @@ public class BagImportModule extends OdsModule {
 //        addAction(new OdsImportAction(this));
         addAction(new OdsUpdateAction(this));
         addAction(new BuildingPassageAction(this));
-        addAction(new UpdateGeometryAction(this));
+//        addAction(new UpdateGeometryAction(this));
         addAction(new AlignBuildingAction(this));
         addAction(new OdsResetAction(this));
 //        actions.add(new AlignBuildingsAction(this));

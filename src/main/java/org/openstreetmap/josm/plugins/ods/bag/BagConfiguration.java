@@ -15,7 +15,7 @@ public class BagConfiguration extends AbstractModuleConfiguration {
     private BagEntityMapperFactory entityMapperFactory;
 
     public BagConfiguration() {
-        WFSHost bagWfsHost = new WFSHost("BAG WFS", "http://geodata.nationaalgeoregister.nl/bag/wfs?request=getCapabilities&VERSION=1.1.0", 15000, 60000, 60000);
+        WFSHost bagWfsHost = new WFSHost("BAG WFS", "http://geodata.nationaalgeoregister.nl/bag/wfs?request=getCapabilities&VERSION=2.0.0", 1000, 60000, 60000);
 //      hosts.put(demolishedBuildingsHost.getName(), demolishedBuildingsHost);
         GtFeatureSource vboFeatureSource = new GtFeatureSource(bagWfsHost, "bag:verblijfsobject", "identificatie");
         GtFeatureSource pandFeatureSource = new GtFeatureSource(bagWfsHost, "bag:pand", "identificatie");

@@ -58,7 +58,6 @@ public class BagWfsLayerDownloader extends OpenDataLayerDownloader {
             checkBuildingCompleteness();
             distributeAddressNodes();
             analyzeBuildingTypes();
-//            findBuildingNeighbours(getResponse());
             updateLayer();
         } catch (Exception e) {
             e.printStackTrace();
