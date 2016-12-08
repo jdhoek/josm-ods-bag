@@ -1,14 +1,10 @@
 package org.openstreetmap.josm.plugins.ods.bag;
 
-import java.util.Arrays;
-
-import org.geotools.data.Query;
 import org.openstreetmap.josm.plugins.ods.AbstractModuleConfiguration;
-import org.openstreetmap.josm.plugins.ods.DefaultOdsDataSource;
 import org.openstreetmap.josm.plugins.ods.OdsDataSource;
 import org.openstreetmap.josm.plugins.ods.bag.gt.build.BagEntityMapperFactory;
+import org.openstreetmap.josm.plugins.ods.geotools.GtDatasourceBuilder;
 import org.openstreetmap.josm.plugins.ods.geotools.GtFeatureSource;
-import org.openstreetmap.josm.plugins.ods.geotools.UniqueIdQuery;
 import org.openstreetmap.josm.plugins.ods.wfs.WFSHost;
 
 public class BagConfiguration extends AbstractModuleConfiguration {
@@ -34,33 +30,42 @@ public class BagConfiguration extends AbstractModuleConfiguration {
     }
     
     private OdsDataSource createVboDataSource(GtFeatureSource featureSource) {
-        String[] properties = new String[] {"identificatie", "oppervlakte", "status", "gebruiksdoel",
-            "openbare_ruimte", "huisnummer", "huisletter", "toevoeging", "postcode", "woonplaats",
-            "geometrie", "pandidentificatie"};
-        Query query = new UniqueIdQuery(featureSource, properties, "identificatie");
-        return new DefaultOdsDataSource(featureSource, query, entityMapperFactory,
-            Arrays.asList(new String[] {"identificatie", "openbare_ruimte", "huisnummer",
-                "huisletter", "toevoeging", "postcode", "woonplaats", "bouwjaar", "geometrie",
-                "gebruiksdoel", "status", "oppervlakte", "pandidentificatie"}));
+        GtDatasourceBuilder builder = new GtDatasourceBuilder()
+            .setFeatureSource(featureSource)
+            .setProperties("identificatie", "oppervlakte", "status", "gebruiksdoel",
+                "openbare_ruimte", "huisnummer", "huisletter", "toevoeging", "postcode", "woonplaats",
+                "geometrie", "pandidentificatie")
+            .setUniqueKey("identificatie")
+            .setEntityMapperFactory(entityMapperFactory);
+        return builder.build();
     }
     
     private OdsDataSource createPandDataSource(GtFeatureSource featureSource) {
-        String[] properties = new String[] {"identificatie", "bouwjaar", "status", "geometrie"};
-        Query query = new UniqueIdQuery(featureSource, properties, "identificatie");
-        return new DefaultOdsDataSource(featureSource, query, entityMapperFactory);
+        GtDatasourceBuilder builder = new GtDatasourceBuilder()
+            .setFeatureSource(featureSource)
+            .setProperties("identificatie", "bouwjaar", "status", "geometrie")
+            .setUniqueKey("identificatie")
+            .setEntityMapperFactory(entityMapperFactory);
+        return builder.build();
     }
     
     private OdsDataSource createLigplaatsDataSource(GtFeatureSource featureSource) {
-        String[] properties = new String[] {"identificatie", "status", "openbare_ruimte", "huisnummer",
-            "huisletter", "toevoeging", "postcode", "woonplaats", "geometrie"};
-        Query query = new UniqueIdQuery(featureSource, properties, "identificatie");
-        return new DefaultOdsDataSource(featureSource, query, entityMapperFactory);
+        GtDatasourceBuilder builder = new GtDatasourceBuilder()
+            .setFeatureSource(featureSource)
+            .setProperties("identificatie", "status", "openbare_ruimte", "huisnummer",
+                "huisletter", "toevoeging", "postcode", "woonplaats", "geometrie")
+            .setUniqueKey("identificatie")
+            .setEntityMapperFactory(entityMapperFactory);
+        return builder.build();
     }
     
     private OdsDataSource createStandplaatsDataSource(GtFeatureSource featureSource) {
-        String[] properties = new String[] {"identificatie", "status", "openbare_ruimte", "huisnummer",
-            "huisletter", "toevoeging", "postcode", "woonplaats", "geometrie"};
-        Query query = new UniqueIdQuery(featureSource, properties, "identificatie");
-        return new DefaultOdsDataSource(featureSource, query, entityMapperFactory);
+        GtDatasourceBuilder builder = new GtDatasourceBuilder()
+            .setFeatureSource(featureSource)
+            .setProperties("identificatie", "status", "openbare_ruimte", "huisnummer",
+                "huisletter", "toevoeging", "postcode", "woonplaats", "geometrie")
+            .setUniqueKey("identificatie")
+            .setEntityMapperFactory(entityMapperFactory);
+        return builder.build();
     }
 }

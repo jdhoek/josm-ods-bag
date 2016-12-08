@@ -1,11 +1,9 @@
 package org.openstreetmap.josm.plugins.ods.bag;
 
 import java.util.LinkedList;
-import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
 import org.openstreetmap.josm.plugins.ods.Normalisation;
-import org.openstreetmap.josm.plugins.ods.OdsDataSource;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.OdsModuleConfiguration;
 import org.openstreetmap.josm.plugins.ods.bag.gt.build.BuildingTypeEnricher;
@@ -17,6 +15,7 @@ import org.openstreetmap.josm.plugins.ods.entities.opendata.FeatureDownloader;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.OpenDataLayerDownloader;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.OpenDataLayerManager;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
+import org.openstreetmap.josm.plugins.ods.geotools.GtDataSource;
 import org.openstreetmap.josm.plugins.ods.geotools.GtDownloader;
 import org.openstreetmap.josm.plugins.ods.matching.OpenDataHousingUnitToBuildingMatcher;
 
@@ -41,37 +40,32 @@ public class BagWfsLayerDownloader extends OpenDataLayerDownloader {
     public void initialize() throws OdsException {
         this.layerManager = module.getOpenDataLayerManager();
         addFeatureDownloader(createBuildingDownloader("bag:pand"));
-        addFeatureDownloader(createBuildingDownloader("bag:ligplaats"));
-        addFeatureDownloader(createBuildingDownloader("bag:standplaats"));
+//        addFeatureDownloader(createBuildingDownloader("bag:ligplaats"));
+//        addFeatureDownloader(createBuildingDownloader("bag:standplaats"));
 //      addFeatureDownloader(createDemolishedBuildingsDownloader());
-        addFeatureDownloader(createVerblijfsobjectDownloader());
+//        addFeatureDownloader(createVerblijfsobjectDownloader());
         this.primitiveBuilder = new BagPrimitiveBuilder(module);
     }
 
     @Override
-    public void process() throws ExecutionException {
+    public void process() throws OdsException {
         Thread.currentThread().setName("BagWfsLayerDownloader process");
-        try {
-            super.process();
-            primitiveBuilder.run(getResponse());
-            matchHousingUnitsToBuilding();
-            checkBuildingCompleteness();
-            distributeAddressNodes();
-            analyzeBuildingTypes();
-            updateLayer();
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new ExecutionException(e.getMessage(), e);
-        }
+        super.process();
+        primitiveBuilder.run(getResponse());
+        matchHousingUnitsToBuilding();
+        checkBuildingCompleteness();
+        distributeAddressNodes();
+        analyzeBuildingTypes();
+        updateLayer();
     }
 
     private FeatureDownloader createVerblijfsobjectDownloader() throws OdsException {
-        OdsDataSource dataSource = configuration.getDataSource("bag:verblijfsobject");
+        GtDataSource dataSource = (GtDataSource) configuration.getDataSource("bag:verblijfsobject");
         return new GtDownloader<>(module, dataSource, HousingUnit.class);
     }
     
     private FeatureDownloader createBuildingDownloader(String featureType) throws OdsException {
-        OdsDataSource dataSource = configuration.getDataSource(featureType);
+        GtDataSource dataSource = (GtDataSource) configuration.getDataSource(featureType);
         FeatureDownloader downloader = new GtDownloader<>(module, dataSource, Building.class);
         /*
          *  The original BAG import partially normalised the building geometries,
