@@ -40,10 +40,10 @@ public class BagWfsLayerDownloader extends OpenDataLayerDownloader {
     public void initialize() throws OdsException {
         this.layerManager = module.getOpenDataLayerManager();
         addFeatureDownloader(createBuildingDownloader("bag:pand"));
-//        addFeatureDownloader(createBuildingDownloader("bag:ligplaats"));
-//        addFeatureDownloader(createBuildingDownloader("bag:standplaats"));
+        addFeatureDownloader(createBuildingDownloader("bag:ligplaats"));
+        addFeatureDownloader(createBuildingDownloader("bag:standplaats"));
 //      addFeatureDownloader(createDemolishedBuildingsDownloader());
-//        addFeatureDownloader(createVerblijfsobjectDownloader());
+        addFeatureDownloader(createVerblijfsobjectDownloader());
         this.primitiveBuilder = new BagPrimitiveBuilder(module);
     }
 
