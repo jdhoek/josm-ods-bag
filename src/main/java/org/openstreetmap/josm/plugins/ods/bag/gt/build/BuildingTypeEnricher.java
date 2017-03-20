@@ -31,7 +31,7 @@ public class BuildingTypeEnricher implements Consumer<Building> {
             return;
         }
         BuildingType type = BuildingType.UNCLASSIFIED;
-        if (building.getAddressNodes().size() == 1) {
+        if (building.getHousingUnits().size() == 1) {
             type = getBuildingType(building.getHousingUnits().get(0));
         }
         else {

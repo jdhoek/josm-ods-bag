@@ -2,6 +2,9 @@ package org.openstreetmap.josm.plugins.ods.bag;
 
 import static org.openstreetmap.josm.tools.I18n.tr;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.swing.JOptionPane;
 
 import org.openstreetmap.josm.Main;
@@ -17,6 +20,7 @@ import org.openstreetmap.josm.plugins.ods.bag.osm.build.BagOsmAddressNodeBuilder
 import org.openstreetmap.josm.plugins.ods.bag.osm.build.BagOsmBuildingBuilder;
 import org.openstreetmap.josm.plugins.ods.crs.CRSUtil;
 import org.openstreetmap.josm.plugins.ods.crs.CRSUtilProj4j;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingUpdater;
 import org.openstreetmap.josm.plugins.ods.entities.GeoRepository;
 import org.openstreetmap.josm.plugins.ods.entities.actual.AddressNode;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
@@ -34,6 +38,7 @@ import org.openstreetmap.josm.plugins.ods.io.OsmLayerDownloader;
 import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
 import org.openstreetmap.josm.plugins.ods.matching.AddressableMatcher;
 import org.openstreetmap.josm.plugins.ods.matching.BuildingMatcher;
+import org.openstreetmap.josm.plugins.ods.update.EntityUpdater;
 import org.openstreetmap.josm.tools.I18n;
 
 public class BagImportModule extends OdsModule {
@@ -43,6 +48,7 @@ public class BagImportModule extends OdsModule {
     private final MainDownloader mainDownloader;
     private GeoUtil geoUtil = new GeoUtil();
     private CRSUtil crsUtil = new CRSUtilProj4j();
+    private List<EntityUpdater> entityUpdaters;
 
     public BagImportModule() {
         this.configuration = new BagConfiguration();
@@ -161,6 +167,15 @@ public class BagImportModule extends OdsModule {
         return 1e-5;
     }
 
+    @Override
+    public List<EntityUpdater> getUpdaters() {
+        if (entityUpdaters == null) {
+            entityUpdaters = new ArrayList<>(1);
+            entityUpdaters.add(new BuildingUpdater(this));
+        }
+        return entityUpdaters;
+    }
+    
     private static boolean checkUser() {
         try {
             final UserInfo userInfo = new OsmServerUserInfoReader().fetchUserInfo(NullProgressMonitor.INSTANCE);

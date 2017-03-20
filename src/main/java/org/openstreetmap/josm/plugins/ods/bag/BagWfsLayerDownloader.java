@@ -7,6 +7,7 @@ import org.openstreetmap.josm.plugins.ods.Normalisation;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.OdsModuleConfiguration;
 import org.openstreetmap.josm.plugins.ods.bag.gt.build.BuildingTypeEnricher;
+import org.openstreetmap.josm.plugins.ods.entities.actual.AddressNode;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 import org.openstreetmap.josm.plugins.ods.entities.actual.HousingUnit;
 import org.openstreetmap.josm.plugins.ods.entities.enrichment.BuildingCompletenessEnricher;
@@ -17,6 +18,7 @@ import org.openstreetmap.josm.plugins.ods.entities.opendata.OpenDataLayerManager
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 import org.openstreetmap.josm.plugins.ods.geotools.GtDataSource;
 import org.openstreetmap.josm.plugins.ods.geotools.GtDownloader;
+import org.openstreetmap.josm.plugins.ods.matching.OpenDataAddressToBuildingMatcher;
 import org.openstreetmap.josm.plugins.ods.matching.OpenDataHousingUnitToBuildingMatcher;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -42,7 +44,7 @@ public class BagWfsLayerDownloader extends OpenDataLayerDownloader {
         addFeatureDownloader(createBuildingDownloader("bag:pand"));
         addFeatureDownloader(createBuildingDownloader("bag:ligplaats"));
         addFeatureDownloader(createBuildingDownloader("bag:standplaats"));
-//      addFeatureDownloader(createDemolishedBuildingsDownloader());
+        addFeatureDownloader(createMissingAddressDownloader());
         addFeatureDownloader(createVerblijfsobjectDownloader());
         this.primitiveBuilder = new BagPrimitiveBuilder(module);
     }
@@ -53,6 +55,7 @@ public class BagWfsLayerDownloader extends OpenDataLayerDownloader {
         super.process();
         primitiveBuilder.run(getResponse());
         matchHousingUnitsToBuilding();
+        matchAddressNodesToBuilding();
         checkBuildingCompleteness();
         distributeAddressNodes();
         analyzeBuildingTypes();
@@ -62,6 +65,11 @@ public class BagWfsLayerDownloader extends OpenDataLayerDownloader {
     private FeatureDownloader createVerblijfsobjectDownloader() throws OdsException {
         GtDataSource dataSource = (GtDataSource) configuration.getDataSource("bag:verblijfsobject");
         return new GtDownloader<>(module, dataSource, HousingUnit.class);
+    }
+    
+    private FeatureDownloader createMissingAddressDownloader() throws OdsException {
+        GtDataSource dataSource = (GtDataSource) configuration.getDataSource("bag:Address_Missing");
+        return new GtDownloader<>(module, dataSource, AddressNode.class);
     }
     
     private FeatureDownloader createBuildingDownloader(String featureType) throws OdsException {
@@ -78,13 +86,24 @@ public class BagWfsLayerDownloader extends OpenDataLayerDownloader {
     
     
     /**
-     * Find a matching building for foreign addressNodes. 
+     * Find a matching building for open data housing units. 
      */
     private void matchHousingUnitsToBuilding() {
         OpenDataHousingUnitToBuildingMatcher matcher = new OpenDataHousingUnitToBuildingMatcher(module);
         matcher.setUnmatchedHousingUnitHandler(unmatchedHousingUnits::add);
         for(HousingUnit housingUnit : layerManager.getRepository().getAll(HousingUnit.class)) {
             matcher.matchHousingUnitToBuilding(housingUnit);
+        }
+    }
+    
+    /**
+     * Find a matching building for open data addressNodes. 
+     */
+    private void matchAddressNodesToBuilding() {
+        OpenDataAddressToBuildingMatcher matcher = new OpenDataAddressToBuildingMatcher(module);
+//        matcher.setUnmatchedAddressNodeHandler(unmatchedHousingUnits::add);
+        for(AddressNode addressNode : layerManager.getRepository().getAll(AddressNode.class)) {
+            matcher.match(addressNode);
         }
     }
     

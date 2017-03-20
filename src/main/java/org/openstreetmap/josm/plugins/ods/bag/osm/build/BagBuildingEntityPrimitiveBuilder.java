@@ -14,18 +14,18 @@ public class BagBuildingEntityPrimitiveBuilder extends BagEntityPrimitiveBuilder
         super(dataLayer, Building.class);
     }
 
-    //TODO Implement this using a predicate in stead.
-    @Override
-    public void createPrimitive(Building building) {
-        // Ignore buildings with status "Bouwvergunning verleend"
-        // Make an exception for buildings that already exist in OSM. In that case, the building permit is for reconstruction
-        if ("Bouwvergunning verleend".equals(building.getStatus())
-                && building.getMatch(building.getBaseType()) == null) {
-            return;
-        }
-        super.createPrimitive(building);
-    }
-
+//    //TODO Implement this using a predicate in stead.
+//    @Override
+//    public void createPrimitive(Building building) {
+//        // Ignore buildings with status "PLANNED"
+//        // Make an exception for buildings that already exist in OSM. In that case, the building permit is for reconstruction
+//        if (EntityStatus.PLANNED.equals(building.getStatus())
+//                && building.getMatch(building.getBaseType()) == null) {
+//            return;
+//        }
+//        super.createPrimitive(building);
+//    }
+//
 
     @Override
     protected void buildTags(Building building, OdsTagMap tags) {
@@ -41,7 +41,7 @@ public class BagBuildingEntityPrimitiveBuilder extends BagEntityPrimitiveBuilder
         if (building.getStartDate() != null) {
             tags.put("start_date", building.getStartDate());
         }
-        if ("Sloopvergunning verleend".equals(building.getStatus())) {
+        if (EntityStatus.REMOVAL_DUE.equals(building.getStatus())) {
             tags.put("note", "Sloopvergunning verleend");
         }
         tags.putAll(building.getBuildingType().getTags());
