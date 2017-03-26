@@ -1,7 +1,7 @@
 package org.openstreetmap.josm.plugins.ods.bag.entity;
 
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
-import org.openstreetmap.josm.plugins.ods.entities.actual.City;
+import org.openstreetmap.josm.plugins.ods.domains.places.City;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiPolygon;

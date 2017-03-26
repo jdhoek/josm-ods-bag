@@ -1,6 +1,7 @@
 package org.openstreetmap.josm.plugins.ods.bag.gt.build;
 
 import java.math.BigDecimal;
+import java.time.Year;
 import java.util.function.Function;
 
 import org.geotools.data.DataStore;
@@ -11,10 +12,11 @@ import org.openstreetmap.josm.plugins.ods.OdsFeatureSource;
 import org.openstreetmap.josm.plugins.ods.bag.entity.BagAddress;
 import org.openstreetmap.josm.plugins.ods.bag.entity.BagBuilding;
 import org.openstreetmap.josm.plugins.ods.bag.entity.BagHousingUnit;
+import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressNode;
+import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressNodeImpl;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingType;
 import org.openstreetmap.josm.plugins.ods.entities.EntityStatus;
-import org.openstreetmap.josm.plugins.ods.entities.actual.AddressNode;
-import org.openstreetmap.josm.plugins.ods.entities.actual.BuildingType;
-import org.openstreetmap.josm.plugins.ods.entities.actual.impl.AddressNodeImpl;
+import org.openstreetmap.josm.plugins.ods.entities.StartDate;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 import org.openstreetmap.josm.plugins.ods.geotools.GtEntityMapperFactory;
 import org.openstreetmap.josm.plugins.ods.geotools.SimpleFeatureEntityType;
@@ -262,7 +264,7 @@ public class BagEntityMapperFactory extends GtEntityMapperFactory {
         }
     }
 
-    private static class BouwjaarTransform implements TypeTransform<BigDecimal, String> {
+    private static class BouwjaarTransform implements TypeTransform<BigDecimal, StartDate> {
         public BouwjaarTransform() {
             super();
         }
@@ -273,21 +275,21 @@ public class BagEntityMapperFactory extends GtEntityMapperFactory {
         }
 
         @Override
-        public Class<String> getTargetType() {
-            return String.class;
+        public Class<StartDate> getTargetType() {
+            return StartDate.class;
         }
 
         @Override
-        public Function<BigDecimal, String> getFunction() {
+        public Function<BigDecimal, StartDate> getFunction() {
             return null;
         }
 
         @Override
-        public String apply(BigDecimal bouwjaar) {
+        public StartDate apply(BigDecimal bouwjaar) {
             if (bouwjaar == null) {
                 return null;
             }
-            return ((Integer)bouwjaar.intValue()).toString();
+            return new StartDate(Year.of(bouwjaar.intValue()));
         }
     }
 }

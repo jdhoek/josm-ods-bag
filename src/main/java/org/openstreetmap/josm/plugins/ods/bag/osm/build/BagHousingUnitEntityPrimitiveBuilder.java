@@ -3,7 +3,7 @@ package org.openstreetmap.josm.plugins.ods.bag.osm.build;
 import java.time.LocalDate;
 
 import org.openstreetmap.josm.plugins.ods.LayerManager;
-import org.openstreetmap.josm.plugins.ods.entities.actual.HousingUnit;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.HousingUnit;
 import org.openstreetmap.josm.plugins.ods.util.OdsTagMap;
 
 public class BagHousingUnitEntityPrimitiveBuilder extends BagEntityPrimitiveBuilder<HousingUnit> {

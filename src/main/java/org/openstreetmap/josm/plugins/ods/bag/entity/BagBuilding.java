@@ -1,6 +1,6 @@
 package org.openstreetmap.josm.plugins.ods.bag.entity;
 
-import org.openstreetmap.josm.plugins.ods.entities.actual.impl.BuildingImpl;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingImpl;
 
 public class BagBuilding extends BuildingImpl {
     private Long aantalVerblijfsobjecten;

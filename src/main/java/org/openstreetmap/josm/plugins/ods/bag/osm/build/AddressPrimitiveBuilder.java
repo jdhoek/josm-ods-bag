@@ -2,7 +2,7 @@ package org.openstreetmap.josm.plugins.ods.bag.osm.build;
 
 import java.util.Map;
 
-import org.openstreetmap.josm.plugins.ods.entities.actual.Address;
+import org.openstreetmap.josm.plugins.ods.domains.addresses.Address;
 
 public class AddressPrimitiveBuilder {
     public static void buildTags(Address address, Map<String, String> tags) {

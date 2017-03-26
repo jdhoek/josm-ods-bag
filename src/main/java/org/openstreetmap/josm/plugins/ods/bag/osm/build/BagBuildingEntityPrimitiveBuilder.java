@@ -3,9 +3,9 @@ package org.openstreetmap.josm.plugins.ods.bag.osm.build;
 import java.time.LocalDate;
 
 import org.openstreetmap.josm.plugins.ods.LayerManager;
+import org.openstreetmap.josm.plugins.ods.domains.addresses.Address;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.Building;
 import org.openstreetmap.josm.plugins.ods.entities.EntityStatus;
-import org.openstreetmap.josm.plugins.ods.entities.actual.Address;
-import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 import org.openstreetmap.josm.plugins.ods.util.OdsTagMap;
 
 public class BagBuildingEntityPrimitiveBuilder extends BagEntityPrimitiveBuilder<Building> {
@@ -39,7 +39,7 @@ public class BagBuildingEntityPrimitiveBuilder extends BagEntityPrimitiveBuilder
         tags.put("source:date", date.toString());
         tags.put("ref:bag", building.getReferenceId().toString());
         if (building.getStartDate() != null) {
-            tags.put("start_date", building.getStartDate());
+            tags.put("start_date", building.getStartDate().toString());
         }
         if (EntityStatus.REMOVAL_DUE.equals(building.getStatus())) {
             tags.put("note", "Sloopvergunning verleend");

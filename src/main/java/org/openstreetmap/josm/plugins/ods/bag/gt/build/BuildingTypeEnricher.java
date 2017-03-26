@@ -1,5 +1,7 @@
 package org.openstreetmap.josm.plugins.ods.bag.gt.build;
 
+import static org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingType.*;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -8,11 +10,10 @@ import java.util.Map.Entry;
 import java.util.function.Consumer;
 
 import org.openstreetmap.josm.plugins.ods.bag.gt.build.BuildingTypeEnricher.Statistics.Stat;
-import org.openstreetmap.josm.plugins.ods.entities.actual.AddressNode;
-import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
-import org.openstreetmap.josm.plugins.ods.entities.actual.BuildingType;
-import static org.openstreetmap.josm.plugins.ods.entities.actual.BuildingType.*;
-import org.openstreetmap.josm.plugins.ods.entities.actual.HousingUnit;
+import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressNode;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.Building;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingType;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.HousingUnit;
 
 public class BuildingTypeEnricher implements Consumer<Building> {
     private final static List<String> trafo =

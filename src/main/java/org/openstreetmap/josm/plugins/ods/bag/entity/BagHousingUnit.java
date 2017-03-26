@@ -1,7 +1,7 @@
 package org.openstreetmap.josm.plugins.ods.bag.entity;
 
-import org.openstreetmap.josm.plugins.ods.entities.actual.AddressNode;
-import org.openstreetmap.josm.plugins.ods.entities.actual.impl.HousingUnitImpl;
+import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressNode;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.HousingUnitImpl;
 
 public class BagHousingUnit extends HousingUnitImpl {
     private String gebruiksdoel;
