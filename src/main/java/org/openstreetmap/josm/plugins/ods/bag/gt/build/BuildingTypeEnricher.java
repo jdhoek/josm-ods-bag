@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 import java.util.function.Consumer;
 
 import org.openstreetmap.josm.plugins.ods.bag.gt.build.BuildingTypeEnricher.Statistics.Stat;
+import org.openstreetmap.josm.plugins.ods.bag.osm.build.BagBuildingEntityPrimitiveBuilder;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressNode;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.Building;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingType;
@@ -32,13 +33,17 @@ public class BuildingTypeEnricher implements Consumer<Building> {
             return;
         }
         BuildingType type = BuildingType.UNCLASSIFIED;
-        if (building.getHousingUnits().size() == 1) {
+        switch (building.getHousingUnits().size()) {
+        case 0:
+            break;
+        case 1:
             type = getBuildingType(building.getHousingUnits().get(0));
-        }
-        else {
+            break;
+        default:
             type = getBuildingType(building.getHousingUnits());
         }
         building.setBuildingType(type);
+        BagBuildingEntityPrimitiveBuilder.updateBuildingTypeTags(building);
     }
 
     private BuildingType getBuildingType(List<HousingUnit> housingUnits) {

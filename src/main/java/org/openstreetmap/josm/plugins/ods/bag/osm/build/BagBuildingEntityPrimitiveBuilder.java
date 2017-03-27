@@ -6,6 +6,7 @@ import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.Address;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.Building;
 import org.openstreetmap.josm.plugins.ods.entities.EntityStatus;
+import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 import org.openstreetmap.josm.plugins.ods.util.OdsTagMap;
 
 public class BagBuildingEntityPrimitiveBuilder extends BagEntityPrimitiveBuilder<Building> {
@@ -44,12 +45,26 @@ public class BagBuildingEntityPrimitiveBuilder extends BagEntityPrimitiveBuilder
         if (EntityStatus.REMOVAL_DUE.equals(building.getStatus())) {
             tags.put("note", "Sloopvergunning verleend");
         }
-        tags.putAll(building.getBuildingType().getTags());
         if (building.getStatus().equals(EntityStatus.CONSTRUCTION) ||
                 building.getStatus().equals(EntityStatus.PLANNED)) {
-            String type = tags.get("building");
             tags.put("building", "construction");
-            tags.put("construction", type);
+            tags.put("construction", "yes");
+        }
+        else {
+            tags.put("building", "yes");
+        }
+    }
+    
+    public static void updateBuildingTypeTags(Building building) {
+        ManagedPrimitive primitive = building.getPrimitive();
+        if (primitive != null) {
+            primitive.putAll(building.getBuildingType().getTags());
+            if (building.getStatus().equals(EntityStatus.CONSTRUCTION) ||
+                    building.getStatus().equals(EntityStatus.PLANNED)) {
+                String type = primitive.get("building");
+                primitive.put("building", "construction");
+                primitive.put("construction", type);
+            }
         }
     }
 }
