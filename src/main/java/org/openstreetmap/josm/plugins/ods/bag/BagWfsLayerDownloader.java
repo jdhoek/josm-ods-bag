@@ -1,33 +1,37 @@
 package org.openstreetmap.josm.plugins.ods.bag;
 
+import java.util.Arrays;
 import java.util.LinkedList;
-import java.util.function.Consumer;
+import java.util.List;
 
 import org.openstreetmap.josm.plugins.ods.Normalisation;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.OdsModuleConfiguration;
-import org.openstreetmap.josm.plugins.ods.bag.gt.build.BuildingTypeEnricher;
+import org.openstreetmap.josm.plugins.ods.bag.processing.BagBuildingTypeEnricher;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressNode;
+import org.openstreetmap.josm.plugins.ods.domains.addresses.processing.AddressNodeDistributor;
+import org.openstreetmap.josm.plugins.ods.domains.addresses.processing.AddressToBuildingConnector;
+import org.openstreetmap.josm.plugins.ods.domains.addresses.processing.HousingUnitToBuildingConnector;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.Building;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.HousingUnit;
-import org.openstreetmap.josm.plugins.ods.entities.enrichment.BuildingCompletenessEnricher;
-import org.openstreetmap.josm.plugins.ods.entities.enrichment.DistributeAddressNodes;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.processing.BuildingCompletenessEnricher;
+import org.openstreetmap.josm.plugins.ods.entities.PrimitiveBuilder;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.FeatureDownloader;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.OpenDataLayerDownloader;
-import org.openstreetmap.josm.plugins.ods.entities.opendata.OpenDataLayerManager;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 import org.openstreetmap.josm.plugins.ods.geotools.GtDataSource;
 import org.openstreetmap.josm.plugins.ods.geotools.GtDownloader;
-import org.openstreetmap.josm.plugins.ods.matching.OpenDataAddressToBuildingMatcher;
-import org.openstreetmap.josm.plugins.ods.matching.OpenDataHousingUnitToBuildingMatcher;
-
-import com.vividsolutions.jts.geom.Geometry;
+import org.openstreetmap.josm.plugins.ods.io.OdsProcessor;
 
 public class BagWfsLayerDownloader extends OpenDataLayerDownloader {
-    
+    private final static List<Class<? extends OdsProcessor>> odsProcessors = Arrays.asList(
+            HousingUnitToBuildingConnector.class,
+            AddressToBuildingConnector.class,
+            BuildingCompletenessEnricher.class,
+            AddressNodeDistributor.class,
+            BagBuildingTypeEnricher.class);
     private final OdsModule module;
     private final OdsModuleConfiguration configuration;
-    private OpenDataLayerManager layerManager;
     private BagPrimitiveBuilder primitiveBuilder;
 
     LinkedList<HousingUnit> unmatchedHousingUnits = new LinkedList<>();
@@ -39,27 +43,23 @@ public class BagWfsLayerDownloader extends OpenDataLayerDownloader {
     }
     
     @Override
+    protected PrimitiveBuilder getPrimitiveBuilder() {
+        return this.primitiveBuilder;
+    }
+    
+    @Override
+    protected List<Class<? extends OdsProcessor>> getProcessors() {
+        return odsProcessors;
+    }
+    
+    @Override
     public void initialize() throws OdsException {
-        this.layerManager = module.getOpenDataLayerManager();
         addFeatureDownloader(createBuildingDownloader("bag:pand"));
         addFeatureDownloader(createBuildingDownloader("bag:ligplaats"));
         addFeatureDownloader(createBuildingDownloader("bag:standplaats"));
-        addFeatureDownloader(createMissingAddressDownloader());
+//        addFeatureDownloader(createMissingAddressDownloader());
         addFeatureDownloader(createVerblijfsobjectDownloader());
         this.primitiveBuilder = new BagPrimitiveBuilder(module);
-    }
-
-    @Override
-    public void process() throws OdsException {
-        Thread.currentThread().setName("BagWfsLayerDownloader process");
-        super.process();
-        primitiveBuilder.run(getResponse());
-        matchHousingUnitsToBuilding();
-        matchAddressNodesToBuilding();
-        checkBuildingCompleteness();
-        distributeAddressNodes();
-        analyzeBuildingTypes();
-        updateLayer();
     }
 
     private FeatureDownloader createVerblijfsobjectDownloader() throws OdsException {
@@ -82,50 +82,5 @@ public class BagWfsLayerDownloader extends OpenDataLayerDownloader {
          */
         downloader.setNormalisation(Normalisation.CLOCKWISE);
         return downloader;
-    }
-    
-    
-    /**
-     * Find a matching building for open data housing units. 
-     */
-    private void matchHousingUnitsToBuilding() {
-        OpenDataHousingUnitToBuildingMatcher matcher = new OpenDataHousingUnitToBuildingMatcher(module);
-        matcher.setUnmatchedHousingUnitHandler(unmatchedHousingUnits::add);
-        for(HousingUnit housingUnit : layerManager.getRepository().getAll(HousingUnit.class)) {
-            matcher.matchHousingUnitToBuilding(housingUnit);
-        }
-    }
-    
-    /**
-     * Find a matching building for open data addressNodes. 
-     */
-    private void matchAddressNodesToBuilding() {
-        OpenDataAddressToBuildingMatcher matcher = new OpenDataAddressToBuildingMatcher(module);
-//        matcher.setUnmatchedAddressNodeHandler(unmatchedHousingUnits::add);
-        for(AddressNode addressNode : layerManager.getRepository().getAll(AddressNode.class)) {
-            matcher.match(addressNode);
-        }
-    }
-    
-    private void checkBuildingCompleteness() {
-        Geometry boundary = layerManager.getBoundary();
-        Consumer<Building> enricher = new BuildingCompletenessEnricher(boundary);
-        for (Building building : layerManager.getRepository().getAll(Building.class)) {
-            enricher.accept(building);
-        }
-    }
-    
-    private void distributeAddressNodes() {
-        Consumer<Building> enricher = new DistributeAddressNodes();
-        for (Building building : layerManager.getRepository().getAll(Building.class)) {
-            enricher.accept(building);
-        }
-    }
-    
-    private void analyzeBuildingTypes() {
-        Consumer<Building> enricher = new BuildingTypeEnricher();
-        for (Building building : layerManager.getRepository().getAll(Building.class)) {
-            enricher.accept(building);
-        }
     }
 }
