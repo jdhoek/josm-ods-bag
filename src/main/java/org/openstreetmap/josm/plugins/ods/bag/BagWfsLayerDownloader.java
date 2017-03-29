@@ -30,7 +30,6 @@ public class BagWfsLayerDownloader extends OpenDataLayerDownloader {
             BuildingCompletenessEnricher.class,
             AddressNodeDistributor.class,
             BagBuildingTypeEnricher.class);
-    private final OdsModule module;
     private final OdsModuleConfiguration configuration;
     private BagPrimitiveBuilder primitiveBuilder;
 
@@ -38,7 +37,6 @@ public class BagWfsLayerDownloader extends OpenDataLayerDownloader {
 
     public BagWfsLayerDownloader(OdsModule module) {
         super(module);
-        this.module = module;
         this.configuration = module.getConfiguration();
     }
     
@@ -59,22 +57,22 @@ public class BagWfsLayerDownloader extends OpenDataLayerDownloader {
         addFeatureDownloader(createBuildingDownloader("bag:standplaats"));
 //        addFeatureDownloader(createMissingAddressDownloader());
         addFeatureDownloader(createVerblijfsobjectDownloader());
-        this.primitiveBuilder = new BagPrimitiveBuilder(module);
+        this.primitiveBuilder = new BagPrimitiveBuilder(getModule());
     }
 
     private FeatureDownloader createVerblijfsobjectDownloader() throws OdsException {
         GtDataSource dataSource = (GtDataSource) configuration.getDataSource("bag:verblijfsobject");
-        return new GtDownloader<>(module, dataSource, HousingUnit.class);
+        return new GtDownloader<>(getModule(), dataSource, HousingUnit.class);
     }
     
     private FeatureDownloader createMissingAddressDownloader() throws OdsException {
         GtDataSource dataSource = (GtDataSource) configuration.getDataSource("bag:Address_Missing");
-        return new GtDownloader<>(module, dataSource, AddressNode.class);
+        return new GtDownloader<>(getModule(), dataSource, AddressNode.class);
     }
     
     private FeatureDownloader createBuildingDownloader(String featureType) throws OdsException {
         GtDataSource dataSource = (GtDataSource) configuration.getDataSource(featureType);
-        FeatureDownloader downloader = new GtDownloader<>(module, dataSource, Building.class);
+        FeatureDownloader downloader = new GtDownloader<>(getModule(), dataSource, Building.class);
         /*
          *  The original BAG import partially normalised the building geometries,
          * by making the (outer) rings clockwise. For fast comparison of geometries,
