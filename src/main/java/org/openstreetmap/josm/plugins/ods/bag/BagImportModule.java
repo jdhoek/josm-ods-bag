@@ -25,7 +25,6 @@ import org.openstreetmap.josm.plugins.ods.domains.buildings.Building;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingUpdater;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.HousingUnit;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.actions.BuildingPassageAction;
-import org.openstreetmap.josm.plugins.ods.entities.GeoRepository;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.OpenDataLayerManager;
 import org.openstreetmap.josm.plugins.ods.entities.osm.OsmLayerManager;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
@@ -38,23 +37,24 @@ import org.openstreetmap.josm.plugins.ods.io.OsmLayerDownloader;
 import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
 import org.openstreetmap.josm.plugins.ods.matching.AddressableMatcher;
 import org.openstreetmap.josm.plugins.ods.matching.BuildingMatcher;
+import org.openstreetmap.josm.plugins.ods.storage.GeoRepository;
 import org.openstreetmap.josm.plugins.ods.update.EntityUpdater;
 import org.openstreetmap.josm.tools.I18n;
 
 public class BagImportModule extends OdsModule {
-    private OdsModuleConfiguration configuration;
+    private final OdsModuleConfiguration configuration;
     // Boundary of the Netherlands
     private final static Bounds BOUNDS = new Bounds(50.734, 3.206, 53.583, 7.245);
     private final MainDownloader mainDownloader;
-    private GeoUtil geoUtil = new GeoUtil();
-    private CRSUtil crsUtil = new CRSUtilProj4j();
+    private final GeoUtil geoUtil = new GeoUtil();
+    private final CRSUtil crsUtil = new CRSUtilProj4j();
     private List<EntityUpdater> entityUpdaters;
 
     public BagImportModule() {
         this.configuration = new BagConfiguration();
         this.mainDownloader = createMainDownloader();
     }
-    
+
     private MainDownloader createMainDownloader() {
         MainDownloader downloader = new MainDownloader(this);
         downloader.setOpenDataLayerDownloader(new BagWfsLayerDownloader(this));
@@ -77,15 +77,15 @@ public class BagImportModule extends OdsModule {
         addOsmEntityBuilder(new BagOsmBuildingBuilder(this));
         addOsmEntityBuilder(new BagOsmAddressNodeBuilder(this));
         addAction(new OdsDownloadAction(this));
-//        addAction(new RemoveAssociatedStreetsAction(this));
-//        addAction(new OdsImportAction(this));
+        //        addAction(new RemoveAssociatedStreetsAction(this));
+        //        addAction(new OdsImportAction(this));
         addAction(new OdsUpdateAction(this));
         addAction(new BuildingPassageAction(this));
-//        addAction(new UpdateGeometryAction(this));
+        //        addAction(new UpdateGeometryAction(this));
         addAction(new AlignBuildingAction(this));
         addAction(new OdsResetAction(this));
-//        actions.add(new AlignBuildingsAction(this));
-//        actions.add(new RemoveShortSegmentsAction(this));
+        //        actions.add(new AlignBuildingsAction(this));
+        //        actions.add(new RemoveShortSegmentsAction(this));
     }
 
     @Override
@@ -116,7 +116,7 @@ public class BagImportModule extends OdsModule {
         return "BAG";
     }
 
-    
+
     @Override
     public String getDescription() {
         return I18n.tr("ODS module to import buildings and addresses in the Netherlands");
@@ -151,17 +151,17 @@ public class BagImportModule extends OdsModule {
     @Override
     public void activate() throws ModuleActivationException {
         if (false && !checkUser()) { // Disabled, but kept the code in case we need it
-            int answer = JOptionPane.showConfirmDialog(Main.parent, 
-                 "Je gebruikersnaam eindigt niet op _BAG en is daarom niet geschikt " +
-                 "voor de BAG import.\nWeet je zeker dat je door wilt gaan?",
-                I18n.tr("Invalid user"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
+            int answer = JOptionPane.showConfirmDialog(Main.parent,
+                    "Je gebruikersnaam eindigt niet op _BAG en is daarom niet geschikt " +
+                            "voor de BAG import.\nWeet je zeker dat je door wilt gaan?",
+                            I18n.tr("Invalid user"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
             if (answer == JOptionPane.CANCEL_OPTION) {
                 throw ModuleActivationException.CANCELLED;
             }
         }
         super.activate();
     }
-    
+
     @Override
     public Double getTolerance() {
         return 1e-5;
@@ -175,7 +175,7 @@ public class BagImportModule extends OdsModule {
         }
         return entityUpdaters;
     }
-    
+
     private static boolean checkUser() {
         try {
             final UserInfo userInfo = new OsmServerUserInfoReader().fetchUserInfo(NullProgressMonitor.INSTANCE);

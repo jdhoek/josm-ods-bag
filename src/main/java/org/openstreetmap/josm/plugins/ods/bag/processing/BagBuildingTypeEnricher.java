@@ -1,6 +1,9 @@
 package org.openstreetmap.josm.plugins.ods.bag.processing;
 
-import static org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingType.*;
+import static org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingType.APARTMENTS;
+import static org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingType.OFFICE;
+import static org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingType.PRISON;
+import static org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingType.RETAIL;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -23,7 +26,7 @@ public class BagBuildingTypeEnricher implements OdsProcessor {
     private final static List<String> garage =
             Arrays.asList("GAR","GRG");
     private final OdsModule module = OdsProcessor.getModule();
-    
+
     public BagBuildingTypeEnricher() {
         super();
     }
@@ -31,9 +34,8 @@ public class BagBuildingTypeEnricher implements OdsProcessor {
     @Override
     public void run() {
         LayerManager layerManager = module.getOpenDataLayerManager();
-        for (Building building : layerManager.getRepository().getAll(Building.class)) {
-            updateType(building);
-        }
+        layerManager.getRepository().getAll(Building.class)
+        .forEach(this::updateType);
     }
 
     public void updateType(Building building) {
@@ -68,8 +70,8 @@ public class BagBuildingTypeEnricher implements OdsProcessor {
                 type = APARTMENTS;
             }
             else if (largest.type == PRISON ||
-                largest.type == RETAIL ||
-                largest.type == OFFICE) {
+                    largest.type == RETAIL ||
+                    largest.type == OFFICE) {
                 type = largest.type;
             }
             else {
@@ -99,9 +101,9 @@ public class BagBuildingTypeEnricher implements OdsProcessor {
     }
 
     class Statistics {
-        private Map<BuildingType, Row> rows = new HashMap<>();
+        private final Map<BuildingType, Row> rows = new HashMap<>();
         private double totalArea = 0.0;
-        
+
         public void add(BuildingType type, double area) {
             Row row = rows.get(type);
             if (row == null) {
@@ -111,7 +113,7 @@ public class BagBuildingTypeEnricher implements OdsProcessor {
             row.add(area);
             totalArea += area;
         }
-        
+
         public Stat getLargest() {
             Stat stat = new Stat();
             for (Entry<BuildingType, Row> entry : rows.entrySet()) {
@@ -119,24 +121,24 @@ public class BagBuildingTypeEnricher implements OdsProcessor {
                 if (row.area > stat.area) {
                     stat.type = entry.getKey();
                     stat.area = row.area;
-                    stat.count = row.count; 
+                    stat.count = row.count;
                 }
             }
             stat.percentage = stat.area/totalArea;
             return stat;
         }
-        
+
         class Stat {
             BuildingType type;
             int count = 0;
             double area = 0.0;
             double percentage = 0.0;
         }
-        
+
         class Row {
             int count = 0;
             double area = 0;
-            
+
             public void add(double a) {
                 this.area += a;
                 this.count++;
