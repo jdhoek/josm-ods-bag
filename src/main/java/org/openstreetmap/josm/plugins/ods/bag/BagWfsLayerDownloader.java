@@ -10,7 +10,7 @@ import org.openstreetmap.josm.plugins.ods.OdsModuleConfiguration;
 import org.openstreetmap.josm.plugins.ods.bag.processing.BagBuildingTypeEnricher;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressNode;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.processing.AddressNodeDistributor;
-import org.openstreetmap.josm.plugins.ods.domains.addresses.processing.AddressToBuildingConnector;
+import org.openstreetmap.josm.plugins.ods.domains.addresses.processing.OdAddressToBuildingConnector;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.processing.HousingUnitToBuildingConnector;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.Building;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.HousingUnit;
@@ -26,7 +26,7 @@ import org.openstreetmap.josm.plugins.ods.io.OdsProcessor;
 public class BagWfsLayerDownloader extends OpenDataLayerDownloader {
     private final static List<Class<? extends OdsProcessor>> odsProcessors = Arrays.asList(
             HousingUnitToBuildingConnector.class,
-            AddressToBuildingConnector.class,
+            OdAddressToBuildingConnector.class,
             BuildingCompletenessEnricher.class,
             AddressNodeDistributor.class,
             BagBuildingTypeEnricher.class);
