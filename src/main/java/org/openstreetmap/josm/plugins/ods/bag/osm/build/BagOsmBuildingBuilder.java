@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.osm.build.AbstractOsmBuildingBuilder;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 
@@ -12,9 +11,9 @@ import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 public class BagOsmBuildingBuilder extends AbstractOsmBuildingBuilder {
     @SuppressWarnings("hiding")
     private static Set<String> PARSED_KEYS = buildParsedKeys();
-    
-    public BagOsmBuildingBuilder(OdsModule module) {
-        super(module);
+
+    public BagOsmBuildingBuilder() {
+        super();
     }
 
     @Override
@@ -31,7 +30,7 @@ public class BagOsmBuildingBuilder extends AbstractOsmBuildingBuilder {
     protected Long parseReferenceId(Map<String, String> tags) {
         return BagOsmEntityBuilder.getReferenceId(tags.get("ref:bag"));
     }
-    
+
     private static Set<String> buildParsedKeys() {
         Set<String> keys = new HashSet<>(AbstractOsmBuildingBuilder.PARSED_KEYS);
         keys.add("ref:bag");

@@ -16,8 +16,6 @@ import org.openstreetmap.josm.io.OsmTransferException;
 import org.openstreetmap.josm.plugins.ods.ModuleActivationException;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.OdsModuleConfiguration;
-import org.openstreetmap.josm.plugins.ods.bag.osm.build.BagOsmAddressNodeBuilder;
-import org.openstreetmap.josm.plugins.ods.bag.osm.build.BagOsmBuildingBuilder;
 import org.openstreetmap.josm.plugins.ods.crs.CRSUtil;
 import org.openstreetmap.josm.plugins.ods.crs.CRSUtilProj4j;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressNode;
@@ -73,9 +71,6 @@ public class BagImportModule extends OdsModule {
         mainDownloader.initialize();
         getMatcherManager().registerMatcher(new BuildingMatcher(this));
         getMatcherManager().registerMatcher(new AddressableMatcher(this));
-
-        addOsmEntityBuilder(new BagOsmBuildingBuilder(this));
-        addOsmEntityBuilder(new BagOsmAddressNodeBuilder(this));
         addAction(new OdsDownloadAction(this));
         //        addAction(new RemoveAssociatedStreetsAction(this));
         //        addAction(new OdsImportAction(this));
