@@ -11,7 +11,7 @@ import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.Name;
-import org.openstreetmap.josm.plugins.ods.bag.entity.BagAddress;
+import org.openstreetmap.josm.plugins.ods.domains.addresses.Address;
 import org.openstreetmap.josm.plugins.ods.properties.SimpleEntityMapper;
 import org.openstreetmap.josm.plugins.ods.test.file.wfs.TestData;
 import org.openstreetmap.josm.plugins.ods.test.file.wfs.TestDataLoader;
@@ -25,7 +25,7 @@ public class TestBagEntityMapperFactory {
         TestData testData = TestDataLoader.loadTestData(dir, new String[] {"verblijfsobject"});
         DataStore dataStore = testData.getDataStore();
         BagEntityMapperFactory factory = new BagEntityMapperFactory(dataStore);
-        SimpleEntityMapper<SimpleFeature, BagAddress> mapper = factory.createAddressMapper(simpleFeatureType);
+        SimpleEntityMapper<SimpleFeature, Address> mapper = factory.createAddressMapper(simpleFeatureType);
         assertNotNull(mapper);
     }
 
@@ -36,10 +36,10 @@ public class TestBagEntityMapperFactory {
         DataStore dataStore = testData.getDataStore();
         BagEntityMapperFactory factory = new BagEntityMapperFactory(dataStore);
         SimpleFeatureType featureType = dataStore.getSchema("verblijfsobject");
-        SimpleEntityMapper<SimpleFeature, BagAddress> mapper = factory.createAddressMapper(featureType);
+        SimpleEntityMapper<SimpleFeature, Address> mapper = factory.createAddressMapper(featureType);
         Name typeName = new NameImpl("http://bag.geonovum.nl", "verblijfsobject");
         SimpleFeature feature = testData.getFeature(typeName, "verblijfsobject.5880559");
-        BagAddress address = mapper.map(feature);
+        Address address = mapper.map(feature);
         address.getCityName();
     }
 

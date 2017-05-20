@@ -1,6 +1,7 @@
 package org.openstreetmap.josm.plugins.ods.bag.osm.build;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.Address;
@@ -15,24 +16,24 @@ public class BagBuildingEntityPrimitiveBuilder extends BagEntityPrimitiveBuilder
         super(dataLayer, Building.class);
     }
 
-//    //TODO Implement this using a predicate in stead.
-//    @Override
-//    public void createPrimitive(Building building) {
-//        // Ignore buildings with status "PLANNED"
-//        // Make an exception for buildings that already exist in OSM. In that case, the building permit is for reconstruction
-//        if (EntityStatus.PLANNED.equals(building.getStatus())
-//                && building.getMatch(building.getBaseType()) == null) {
-//            return;
-//        }
-//        super.createPrimitive(building);
-//    }
-//
+    //    //TODO Implement this using a predicate in stead.
+    //    @Override
+    //    public void createPrimitive(Building building) {
+    //        // Ignore buildings with status "PLANNED"
+    //        // Make an exception for buildings that already exist in OSM. In that case, the building permit is for reconstruction
+    //        if (EntityStatus.PLANNED.equals(building.getStatus())
+    //                && building.getMatch(building.getBaseType()) == null) {
+    //            return;
+    //        }
+    //        super.createPrimitive(building);
+    //    }
+    //
 
     @Override
     protected void buildTags(Building building, OdsTagMap tags) {
-        Address address = building.getAddress();
-        if (address != null) {
-            createAddressTags(address, tags);
+        Optional<Address> address = building.getAddress();
+        if (address.isPresent()) {
+            createAddressTags(address.get(), tags);
         }
         tags.put("source", "BAG");
         LocalDate date = building.getSourceDate();
@@ -54,7 +55,7 @@ public class BagBuildingEntityPrimitiveBuilder extends BagEntityPrimitiveBuilder
             tags.put("building", "yes");
         }
     }
-    
+
     public static void updateBuildingTypeTags(Building building) {
         ManagedPrimitive primitive = building.getPrimitive();
         if (primitive != null) {

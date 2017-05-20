@@ -4,18 +4,7 @@ import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingImpl;
 
 public class BagBuilding extends BuildingImpl {
     private Long aantalVerblijfsobjecten;
-    private BagAddress bagAddress;
-    
-    public void setAddress(BagAddress address) {
-        super.setAddress(address);
-        this.bagAddress = address;
-    }
-    
-    @Override
-    public BagAddress getAddress() {
-        return bagAddress;
-    }
-    
+
     public void setAantalVerblijfsobjecten(Long aantalVerblijfsobjecten) {
         this.aantalVerblijfsobjecten = aantalVerblijfsobjecten;
     }

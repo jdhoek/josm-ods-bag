@@ -9,9 +9,10 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.openstreetmap.josm.plugins.ods.OdsFeatureSource;
-import org.openstreetmap.josm.plugins.ods.bag.entity.BagAddress;
 import org.openstreetmap.josm.plugins.ods.bag.entity.BagBuilding;
 import org.openstreetmap.josm.plugins.ods.bag.entity.BagHousingUnit;
+import org.openstreetmap.josm.plugins.ods.domains.addresses.Address;
+import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressImpl;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressNode;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressNodeImpl;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingType;
@@ -38,7 +39,7 @@ public class BagEntityMapperFactory extends GtEntityMapperFactory {
     public BagEntityMapperFactory(WFSHost host) {
         super(host);
     }
-    
+
     public BagEntityMapperFactory(DataStore dataStore) {
         super(dataStore);
     }
@@ -68,7 +69,7 @@ public class BagEntityMapperFactory extends GtEntityMapperFactory {
         EntityType<SimpleFeature> sourceType = new SimpleFeatureEntityType(featureType);
         EntityType<BagBuilding> targetType = new PojoEntityType<>(BagBuilding.class);
         EntityMapperBuilder<SimpleFeature, BagBuilding> builder =
-            new EntityMapperBuilder<>(sourceType, targetType);
+                new EntityMapperBuilder<>(sourceType, targetType);
         builder.setFactory(new SimpleEntityFactory<>(BagBuilding.class));
         builder.addAttributeMapping("#ID", "primaryId");
         builder.addAttributeMapping("identificatie", "referenceId", new SimpleTypeTransform<>(BigDecimal.class, Long.class, BigDecimal::longValue));
@@ -85,7 +86,7 @@ public class BagEntityMapperFactory extends GtEntityMapperFactory {
         EntityType<SimpleFeature> sourceType = new SimpleFeatureEntityType(featureType);
         EntityType<AddressNode> targetType = new PojoEntityType<>(AddressNode.class);
         EntityMapperBuilder<SimpleFeature, AddressNode> builder =
-            new EntityMapperBuilder<>(sourceType, targetType);
+                new EntityMapperBuilder<>(sourceType, targetType);
         builder.setFactory(new SimpleEntityFactory<>(AddressNodeImpl.class));
         builder.addAttributeMapping("#ID", "primaryId");
         builder.addAttributeMapping("identificatie", "referenceId", new SimpleTypeTransform<>(BigDecimal.class, Long.class, BigDecimal::longValue));
@@ -100,7 +101,7 @@ public class BagEntityMapperFactory extends GtEntityMapperFactory {
         EntityType<SimpleFeature> sourceType = new SimpleFeatureEntityType(featureType);
         EntityType<BagHousingUnit> targetType = new PojoEntityType<>(BagHousingUnit.class);
         EntityMapperBuilder<SimpleFeature, BagHousingUnit> builder =
-            new EntityMapperBuilder<>(sourceType, targetType);
+                new EntityMapperBuilder<>(sourceType, targetType);
         builder.setFactory(new SimpleEntityFactory<>(BagHousingUnit.class));
         builder.addAttributeMapping("#ID", "primaryId");
         builder.addAttributeMapping("identificatie", "referenceId", new SimpleTypeTransform<>(BigDecimal.class, Long.class, BigDecimal::longValue));
@@ -120,7 +121,7 @@ public class BagEntityMapperFactory extends GtEntityMapperFactory {
         EntityType<SimpleFeature> sourceType = new SimpleFeatureEntityType(featureType);
         EntityType<BagBuilding> targetType = new PojoEntityType<>(BagBuilding.class);
         EntityMapperBuilder<SimpleFeature, BagBuilding> builder =
-            new EntityMapperBuilder<>(sourceType, targetType);
+                new EntityMapperBuilder<>(sourceType, targetType);
         builder.setFactory(new SimpleEntityFactory<>(BagBuilding.class));
         builder.addAttributeMapping("#ID", "primaryId");
         builder.addAttributeMapping("identificatie", "referenceId", new SimpleTypeTransform<>(BigDecimal.class, Long.class, BigDecimal::longValue));
@@ -137,7 +138,7 @@ public class BagEntityMapperFactory extends GtEntityMapperFactory {
         EntityType<SimpleFeature> sourceType = new SimpleFeatureEntityType(featureType);
         EntityType<BagBuilding> targetType = new PojoEntityType<>(BagBuilding.class);
         EntityMapperBuilder<SimpleFeature, BagBuilding> builder =
-            new EntityMapperBuilder<>(sourceType, targetType);
+                new EntityMapperBuilder<>(sourceType, targetType);
         builder.setFactory(new SimpleEntityFactory<>(BagBuilding.class));
         builder.addAttributeMapping("#ID", "primaryId");
         builder.addAttributeMapping("identificatie", "referenceId", new SimpleTypeTransform<>(BigDecimal.class, Long.class, BigDecimal::longValue));
@@ -149,12 +150,12 @@ public class BagEntityMapperFactory extends GtEntityMapperFactory {
         return builder.build();
     }
 
-    protected static SimpleEntityMapper<SimpleFeature, BagAddress> createAddressMapper(SimpleFeatureType featureType) {
+    protected static SimpleEntityMapper<SimpleFeature, Address> createAddressMapper(SimpleFeatureType featureType) {
         EntityType<SimpleFeature> sourceType = new SimpleFeatureEntityType(featureType);
-        EntityType<BagAddress> targetType = new PojoEntityType<>(BagAddress.class);
-        EntityMapperBuilder<SimpleFeature, BagAddress> builder =
-            new EntityMapperBuilder<>(sourceType, targetType);
-        builder.setFactory(new SimpleEntityFactory<>(BagAddress.class));
+        EntityType<Address> targetType = new PojoEntityType<>(Address.class);
+        EntityMapperBuilder<SimpleFeature, Address> builder =
+                new EntityMapperBuilder<>(sourceType, targetType);
+        builder.setFactory(new SimpleEntityFactory<>(AddressImpl.class));
         builder.addAttributeMapping("huisnummer", "houseNumber", new SimpleTypeTransform<>(BigDecimal.class, Integer.class, BigDecimal::intValue));
         builder.addAttributeMapping("huisletter", "houseLetter", new HouseLetterTransform());
         builder.addAttributeMapping("toevoeging", "houseNumberExtra");
@@ -177,13 +178,13 @@ public class BagEntityMapperFactory extends GtEntityMapperFactory {
             return source.charAt(0);
         }
     }
-    
+
     private static class BuildingTypeTransform extends SimpleTypeTransform<String, BuildingType> {
 
         public BuildingTypeTransform() {
             super(String.class, BuildingType.class, null);
         }
-        
+
         @Override
         public BuildingType apply(String type) {
             switch (type.toLowerCase()) {
@@ -199,12 +200,12 @@ public class BagEntityMapperFactory extends GtEntityMapperFactory {
                 return BuildingType.OFFICE;
             case "celfunctie":
                 return BuildingType.PRISON;
-            default: 
+            default:
                 return BuildingType.UNCLASSIFIED;
             }
         }
     }
-    
+
     private static class PandStatusTransform extends SimpleTypeTransform<String, EntityStatus> {
         public PandStatusTransform() {
             super(String.class, EntityStatus.class, null);

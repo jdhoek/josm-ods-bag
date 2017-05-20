@@ -2,8 +2,9 @@ package org.openstreetmap.josm.plugins.ods.bag.entity;
 
 import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressImpl;
 
+@Deprecated
 public class BagAddress extends AddressImpl {
-    
+
     @Override
     public String formatHouseNumber() {
         StringBuilder sb = new StringBuilder(10);
