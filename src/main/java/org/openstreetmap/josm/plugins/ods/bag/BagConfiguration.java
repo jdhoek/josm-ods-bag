@@ -1,6 +1,7 @@
 package org.openstreetmap.josm.plugins.ods.bag;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import org.openstreetmap.josm.plugins.ods.AbstractModuleConfiguration;
@@ -9,7 +10,11 @@ import org.openstreetmap.josm.plugins.ods.bag.gt.build.BagEntityMapperFactory;
 import org.openstreetmap.josm.plugins.ods.bag.gt.build.DuinoordEntityMapperFactory;
 import org.openstreetmap.josm.plugins.ods.bag.osm.build.BagOsmAddressNodeBuilder;
 import org.openstreetmap.josm.plugins.ods.bag.osm.build.BagOsmBuildingBuilder;
+import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressNodeEntityType;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.processing.Osm_Building_AddressNode_RelationManager;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingEntityType;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingUnitEntityType;
+import org.openstreetmap.josm.plugins.ods.entities.EntityType;
 import org.openstreetmap.josm.plugins.ods.entities.osm.OsmEntityBuilder;
 import org.openstreetmap.josm.plugins.ods.geotools.GtDatasourceBuilder;
 import org.openstreetmap.josm.plugins.ods.geotools.GtFeatureSource;
@@ -19,6 +24,10 @@ import org.openstreetmap.josm.plugins.ods.wfs.WFSHost;
 public class BagConfiguration extends AbstractModuleConfiguration {
     private final BagEntityMapperFactory entityMapperFactory;
     private final DuinoordEntityMapperFactory duinoordEntityMapperFactory;
+    private static List<? extends EntityType> entityTypes = Arrays.<EntityType>asList(
+            BuildingEntityType.INSTANCE,
+            AddressNodeEntityType.INSTANCE,
+            BuildingUnitEntityType.INSTANCE);
 
     public BagConfiguration() {
         WFSHost bagWfsHost = new WFSHost("BAG WFS", "http://geodata.nationaalgeoregister.nl/bag/wfs?request=getCapabilities&VERSION=2.0.0", 1000, 60000, 60000);
@@ -44,6 +53,13 @@ public class BagConfiguration extends AbstractModuleConfiguration {
         addDataSource(createStandplaatsDataSource(standplaatsFeatureSource));
         addDataSource(createMissingAddressDataSource(missingAddressFS));
     }
+
+
+    @Override
+    public Collection<? extends EntityType> getEntityTypes() {
+        return entityTypes;
+    }
+
 
     @Override
     public List<Class<? extends OsmEntityBuilder>> getOsmEntityBuilders() {

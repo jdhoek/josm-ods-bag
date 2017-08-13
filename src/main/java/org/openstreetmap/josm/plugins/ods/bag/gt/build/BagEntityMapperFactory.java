@@ -14,15 +14,15 @@ import org.openstreetmap.josm.plugins.ods.bag.entity.BagHousingUnit;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.Address;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressImpl;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressNode;
-import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressNodeImpl;
-import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingType;
+import org.openstreetmap.josm.plugins.ods.domains.addresses.OpenDataAddressNode;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.TypeOfBuilding;
 import org.openstreetmap.josm.plugins.ods.entities.EntityStatus;
 import org.openstreetmap.josm.plugins.ods.entities.StartDate;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 import org.openstreetmap.josm.plugins.ods.geotools.GtEntityMapperFactory;
 import org.openstreetmap.josm.plugins.ods.geotools.SimpleFeatureEntityType;
 import org.openstreetmap.josm.plugins.ods.properties.EntityMapperBuilder;
-import org.openstreetmap.josm.plugins.ods.properties.EntityType;
+import org.openstreetmap.josm.plugins.ods.properties.OdsEntityType;
 import org.openstreetmap.josm.plugins.ods.properties.SimpleEntityFactory;
 import org.openstreetmap.josm.plugins.ods.properties.SimpleEntityMapper;
 import org.openstreetmap.josm.plugins.ods.properties.pojo.PojoEntityType;
@@ -66,8 +66,8 @@ public class BagEntityMapperFactory extends GtEntityMapperFactory {
 
     public SimpleEntityMapper<SimpleFeature, BagBuilding> createBuildingMapper(SimpleFeatureType featureType) throws OdsException {
         CoordinateReferenceSystem crs = featureType.getCoordinateReferenceSystem();
-        EntityType<SimpleFeature> sourceType = new SimpleFeatureEntityType(featureType);
-        EntityType<BagBuilding> targetType = new PojoEntityType<>(BagBuilding.class);
+        OdsEntityType<SimpleFeature> sourceType = new SimpleFeatureEntityType(featureType);
+        OdsEntityType<BagBuilding> targetType = new PojoEntityType<>(BagBuilding.class);
         EntityMapperBuilder<SimpleFeature, BagBuilding> builder =
                 new EntityMapperBuilder<>(sourceType, targetType);
         builder.setFactory(new SimpleEntityFactory<>(BagBuilding.class));
@@ -76,18 +76,18 @@ public class BagEntityMapperFactory extends GtEntityMapperFactory {
         builder.addAttributeMapping("status", "status", new PandStatusTransform());
         builder.addAttributeMapping("bouwjaar", "startDate", new BouwjaarTransform());
         builder.addAttributeMapping("geometrie", "geometry", new GeoTypeTransform(crs));
-        builder.addConstant("buildingType", BuildingType.UNCLASSIFIED);
+        builder.addConstant("buildingType", TypeOfBuilding.UNCLASSIFIED);
         builder.addConstant("source", "BAG");
         return builder.build();
     }
 
     public static SimpleEntityMapper<SimpleFeature, AddressNode> createAddressNodeMapper(SimpleFeatureType featureType) {
         CoordinateReferenceSystem crs = featureType.getCoordinateReferenceSystem();
-        EntityType<SimpleFeature> sourceType = new SimpleFeatureEntityType(featureType);
-        EntityType<AddressNode> targetType = new PojoEntityType<>(AddressNode.class);
+        OdsEntityType<SimpleFeature> sourceType = new SimpleFeatureEntityType(featureType);
+        OdsEntityType<AddressNode> targetType = new PojoEntityType<>(AddressNode.class);
         EntityMapperBuilder<SimpleFeature, AddressNode> builder =
                 new EntityMapperBuilder<>(sourceType, targetType);
-        builder.setFactory(new SimpleEntityFactory<>(AddressNodeImpl.class));
+        builder.setFactory(new SimpleEntityFactory<>(OpenDataAddressNode.class));
         builder.addAttributeMapping("#ID", "primaryId");
         builder.addAttributeMapping("identificatie", "referenceId", new SimpleTypeTransform<>(BigDecimal.class, Long.class, BigDecimal::longValue));
         builder.addAttributeMapping("geometrie", "geometry", new CastingGeoTypeTransform<>(crs, Point.class));
@@ -98,8 +98,8 @@ public class BagEntityMapperFactory extends GtEntityMapperFactory {
 
     public SimpleEntityMapper<SimpleFeature, BagHousingUnit> createHousingUnitMapper(SimpleFeatureType featureType) throws OdsException {
         CoordinateReferenceSystem crs = featureType.getCoordinateReferenceSystem();
-        EntityType<SimpleFeature> sourceType = new SimpleFeatureEntityType(featureType);
-        EntityType<BagHousingUnit> targetType = new PojoEntityType<>(BagHousingUnit.class);
+        OdsEntityType<SimpleFeature> sourceType = new SimpleFeatureEntityType(featureType);
+        OdsEntityType<BagHousingUnit> targetType = new PojoEntityType<>(BagHousingUnit.class);
         EntityMapperBuilder<SimpleFeature, BagHousingUnit> builder =
                 new EntityMapperBuilder<>(sourceType, targetType);
         builder.setFactory(new SimpleEntityFactory<>(BagHousingUnit.class));
@@ -118,8 +118,8 @@ public class BagEntityMapperFactory extends GtEntityMapperFactory {
 
     public SimpleEntityMapper<SimpleFeature, BagBuilding> createLigplaatsMapper(SimpleFeatureType featureType) throws OdsException {
         CoordinateReferenceSystem crs = featureType.getCoordinateReferenceSystem();
-        EntityType<SimpleFeature> sourceType = new SimpleFeatureEntityType(featureType);
-        EntityType<BagBuilding> targetType = new PojoEntityType<>(BagBuilding.class);
+        OdsEntityType<SimpleFeature> sourceType = new SimpleFeatureEntityType(featureType);
+        OdsEntityType<BagBuilding> targetType = new PojoEntityType<>(BagBuilding.class);
         EntityMapperBuilder<SimpleFeature, BagBuilding> builder =
                 new EntityMapperBuilder<>(sourceType, targetType);
         builder.setFactory(new SimpleEntityFactory<>(BagBuilding.class));
@@ -128,15 +128,15 @@ public class BagEntityMapperFactory extends GtEntityMapperFactory {
         builder.addAttributeMapping("status", "status", new PandStatusTransform());
         builder.addAttributeMapping("geometrie", "geometry", new GeoTypeTransform(crs));
         builder.addConstant("source", "BAG");
-        builder.addConstant("buildingType", BuildingType.HOUSEBOAT);
+        builder.addConstant("buildingType", TypeOfBuilding.HOUSEBOAT);
         builder.addChildMapper(createAddressMapper(featureType), "address");
         return builder.build();
     }
 
     public SimpleEntityMapper<SimpleFeature, BagBuilding> createStandplaatsMapper(SimpleFeatureType featureType) throws OdsException {
         CoordinateReferenceSystem crs = featureType.getCoordinateReferenceSystem();
-        EntityType<SimpleFeature> sourceType = new SimpleFeatureEntityType(featureType);
-        EntityType<BagBuilding> targetType = new PojoEntityType<>(BagBuilding.class);
+        OdsEntityType<SimpleFeature> sourceType = new SimpleFeatureEntityType(featureType);
+        OdsEntityType<BagBuilding> targetType = new PojoEntityType<>(BagBuilding.class);
         EntityMapperBuilder<SimpleFeature, BagBuilding> builder =
                 new EntityMapperBuilder<>(sourceType, targetType);
         builder.setFactory(new SimpleEntityFactory<>(BagBuilding.class));
@@ -145,14 +145,14 @@ public class BagEntityMapperFactory extends GtEntityMapperFactory {
         builder.addAttributeMapping("status", "status", new PandStatusTransform());
         builder.addAttributeMapping("geometrie", "geometry", new GeoTypeTransform(crs));
         builder.addConstant("source", "BAG");
-        builder.addConstant("buildingType", BuildingType.STATIC_CARAVAN);
+        builder.addConstant("buildingType", TypeOfBuilding.STATIC_CARAVAN);
         builder.addChildMapper(createAddressMapper(featureType), "address");
         return builder.build();
     }
 
     protected static SimpleEntityMapper<SimpleFeature, Address> createAddressMapper(SimpleFeatureType featureType) {
-        EntityType<SimpleFeature> sourceType = new SimpleFeatureEntityType(featureType);
-        EntityType<Address> targetType = new PojoEntityType<>(Address.class);
+        OdsEntityType<SimpleFeature> sourceType = new SimpleFeatureEntityType(featureType);
+        OdsEntityType<Address> targetType = new PojoEntityType<>(Address.class);
         EntityMapperBuilder<SimpleFeature, Address> builder =
                 new EntityMapperBuilder<>(sourceType, targetType);
         builder.setFactory(new SimpleEntityFactory<>(AddressImpl.class));
@@ -179,29 +179,29 @@ public class BagEntityMapperFactory extends GtEntityMapperFactory {
         }
     }
 
-    private static class BuildingTypeTransform extends SimpleTypeTransform<String, BuildingType> {
+    private static class BuildingTypeTransform extends SimpleTypeTransform<String, TypeOfBuilding> {
 
         public BuildingTypeTransform() {
-            super(String.class, BuildingType.class, null);
+            super(String.class, TypeOfBuilding.class, null);
         }
 
         @Override
-        public BuildingType apply(String type) {
+        public TypeOfBuilding apply(String type) {
             switch (type.toLowerCase()) {
             case "woonfunctie":
-                return BuildingType.HOUSE;
+                return TypeOfBuilding.HOUSE;
             case "overige gebruiksfunctie":
-                return BuildingType.UNCLASSIFIED;
+                return TypeOfBuilding.UNCLASSIFIED;
             case "industriefunctie":
-                return BuildingType.INDUSTRIAL;
+                return TypeOfBuilding.INDUSTRIAL;
             case "winkelfunctie":
-                return BuildingType.RETAIL;
+                return TypeOfBuilding.RETAIL;
             case "kantoorfunctie":
-                return BuildingType.OFFICE;
+                return TypeOfBuilding.OFFICE;
             case "celfunctie":
-                return BuildingType.PRISON;
+                return TypeOfBuilding.PRISON;
             default:
-                return BuildingType.UNCLASSIFIED;
+                return TypeOfBuilding.UNCLASSIFIED;
             }
         }
     }

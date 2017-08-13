@@ -1,23 +1,23 @@
 package org.openstreetmap.josm.plugins.ods.bag.processing;
 
-import static org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingType.APARTMENTS;
-import static org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingType.OFFICE;
-import static org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingType.PRISON;
-import static org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingType.RETAIL;
+import static org.openstreetmap.josm.plugins.ods.domains.buildings.TypeOfBuilding.APARTMENTS;
+import static org.openstreetmap.josm.plugins.ods.domains.buildings.TypeOfBuilding.OFFICE;
+import static org.openstreetmap.josm.plugins.ods.domains.buildings.TypeOfBuilding.PRISON;
+import static org.openstreetmap.josm.plugins.ods.domains.buildings.TypeOfBuilding.RETAIL;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
-import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.bag.osm.build.BagBuildingEntityPrimitiveBuilder;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressNode;
-import org.openstreetmap.josm.plugins.ods.domains.buildings.Building;
-import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingType;
-import org.openstreetmap.josm.plugins.ods.domains.buildings.HousingUnit;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingUnit;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.OpenDataBuilding;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.TypeOfBuilding;
 import org.openstreetmap.josm.plugins.ods.io.OdsProcessor;
 
 public class BagBuildingTypeEnricher implements OdsProcessor {
@@ -33,40 +33,39 @@ public class BagBuildingTypeEnricher implements OdsProcessor {
 
     @Override
     public void run() {
-        LayerManager layerManager = module.getOpenDataLayerManager();
-        layerManager.getRepository().getAll(Building.class)
+        module.getRepository().getAll(OpenDataBuilding.class)
         .forEach(this::updateType);
     }
 
-    public void updateType(Building building) {
-        if (BuildingType.HOUSEBOAT.equals(building.getBuildingType()) ||
-                BuildingType.STATIC_CARAVAN.equals(building.getBuildingType())) {
+    public void updateType(OpenDataBuilding building) {
+        if (TypeOfBuilding.HOUSEBOAT.equals(building.getBuildingType()) ||
+                TypeOfBuilding.STATIC_CARAVAN.equals(building.getBuildingType())) {
             return;
         }
-        BuildingType type = BuildingType.UNCLASSIFIED;
-        switch (building.getHousingUnits().size()) {
+        TypeOfBuilding type = TypeOfBuilding.UNCLASSIFIED;
+        switch (building.getBuildingUnits().size()) {
         case 0:
             break;
         case 1:
-            type = getBuildingType(building.getHousingUnits().get(0));
+            type = getBuildingType(building.getBuildingUnits().iterator().next());
             break;
         default:
-            type = getBuildingType(building.getHousingUnits());
+            type = getBuildingType(building.getBuildingUnits());
         }
         building.setBuildingType(type);
         BagBuildingEntityPrimitiveBuilder.updateBuildingTypeTags(building);
     }
 
-    private BuildingType getBuildingType(List<HousingUnit> housingUnits) {
+    private TypeOfBuilding getBuildingType(Set<BuildingUnit> buildingUnits) {
         Statistics stats = new Statistics();
-        for (HousingUnit housingUnit : housingUnits) {
-            BuildingType type = getBuildingType(housingUnit);
-            stats.add(type, housingUnit.getArea());
+        for (BuildingUnit buildingUnit : buildingUnits) {
+            TypeOfBuilding type = getBuildingType(buildingUnit);
+            stats.add(type, buildingUnit.getArea());
         }
         Statistics.Stat largest = stats.getLargest();
-        BuildingType type = BuildingType.UNCLASSIFIED;
+        TypeOfBuilding type = TypeOfBuilding.UNCLASSIFIED;
         if (largest.percentage > 0.75) {
-            if (largest.type == BuildingType.HOUSE) {
+            if (largest.type == TypeOfBuilding.HOUSE) {
                 type = APARTMENTS;
             }
             else if (largest.type == PRISON ||
@@ -75,25 +74,25 @@ public class BagBuildingTypeEnricher implements OdsProcessor {
                 type = largest.type;
             }
             else {
-                type = BuildingType.UNCLASSIFIED;
+                type = TypeOfBuilding.UNCLASSIFIED;
             }
         }
         return type;
     }
 
-    private static BuildingType getBuildingType(HousingUnit housingUnit) {
-        BuildingType type = housingUnit.getType();
-        // Unclassified housing units with 1 address may be a garage or a substation
-        if (type == BuildingType.UNCLASSIFIED && housingUnit.getAddressNodes().size() == 1) {
-            AddressNode mainNode = housingUnit.getMainAddressNode();
+    private static TypeOfBuilding getBuildingType(BuildingUnit buildingUnit) {
+        TypeOfBuilding type = buildingUnit.getType();
+        // Unclassified building units with 1 address may be a garage or a substation
+        if (type == TypeOfBuilding.UNCLASSIFIED && buildingUnit.getAddressNodes().size() == 1) {
+            AddressNode mainNode = buildingUnit.getMainAddressNode();
             String extra = mainNode.getAddress().getHouseNumberExtra();
             if (extra != null) {
                 extra = extra.toUpperCase();
                 if (trafo.contains(extra)) {
-                    type = BuildingType.SUBSTATION;
+                    type = TypeOfBuilding.SUBSTATION;
                 }
                 else if (garage.contains(extra)) {
-                    type = BuildingType.GARAGE;
+                    type = TypeOfBuilding.GARAGE;
                 }
             }
         }
@@ -101,10 +100,10 @@ public class BagBuildingTypeEnricher implements OdsProcessor {
     }
 
     class Statistics {
-        private final Map<BuildingType, Row> rows = new HashMap<>();
+        private final Map<TypeOfBuilding, Row> rows = new HashMap<>();
         private double totalArea = 0.0;
 
-        public void add(BuildingType type, double area) {
+        public void add(TypeOfBuilding type, double area) {
             Row row = rows.get(type);
             if (row == null) {
                 row = new Row();
@@ -116,7 +115,7 @@ public class BagBuildingTypeEnricher implements OdsProcessor {
 
         public Stat getLargest() {
             Stat stat = new Stat();
-            for (Entry<BuildingType, Row> entry : rows.entrySet()) {
+            for (Entry<TypeOfBuilding, Row> entry : rows.entrySet()) {
                 Row row = entry.getValue();
                 if (row.area > stat.area) {
                     stat.type = entry.getKey();
@@ -129,7 +128,7 @@ public class BagBuildingTypeEnricher implements OdsProcessor {
         }
 
         class Stat {
-            BuildingType type;
+            TypeOfBuilding type;
             int count = 0;
             double area = 0.0;
             double percentage = 0.0;

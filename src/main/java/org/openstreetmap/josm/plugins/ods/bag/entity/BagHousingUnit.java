@@ -1,15 +1,15 @@
 package org.openstreetmap.josm.plugins.ods.bag.entity;
 
-import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressNode;
-import org.openstreetmap.josm.plugins.ods.domains.buildings.HousingUnitImpl;
+import org.openstreetmap.josm.plugins.ods.domains.addresses.OpenDataAddressNode;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.OpenDataBuildingUnit;
 
-public class BagHousingUnit extends HousingUnitImpl {
+public class BagHousingUnit extends OpenDataBuildingUnit {
     private String gebruiksdoel;
-    
+
     @Override
-    public void setMainAddressNode(AddressNode addressNode) {
+    public void setMainAddressNode(OpenDataAddressNode addressNode) {
         super.setMainAddressNode(addressNode);
-        addressNode.setHousingUnit(this);
+        addressNode.setBuildingUnit(this);
     }
 
     @Override
@@ -19,7 +19,7 @@ public class BagHousingUnit extends HousingUnitImpl {
         }
         return super.isIncomplete();
     }
-    
+
     public String getGebruiksdoel() {
         return gebruiksdoel;
     }

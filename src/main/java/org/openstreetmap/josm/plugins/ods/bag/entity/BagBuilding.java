@@ -1,8 +1,8 @@
 package org.openstreetmap.josm.plugins.ods.bag.entity;
 
-import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingImpl;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.OpenDataBuilding;
 
-public class BagBuilding extends BuildingImpl {
+public class BagBuilding extends OpenDataBuilding {
     private Long aantalVerblijfsobjecten;
 
     public void setAantalVerblijfsobjecten(Long aantalVerblijfsobjecten) {
