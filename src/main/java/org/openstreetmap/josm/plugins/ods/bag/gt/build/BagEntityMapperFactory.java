@@ -1,8 +1,6 @@
 package org.openstreetmap.josm.plugins.ods.bag.gt.build;
 
 import java.math.BigDecimal;
-import java.time.Year;
-import java.util.function.Function;
 
 import org.geotools.data.DataStore;
 import org.opengis.feature.simple.SimpleFeature;
@@ -17,7 +15,6 @@ import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressNode;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.OpenDataAddressNode;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.TypeOfBuilding;
 import org.openstreetmap.josm.plugins.ods.entities.EntityStatus;
-import org.openstreetmap.josm.plugins.ods.entities.StartDate;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 import org.openstreetmap.josm.plugins.ods.geotools.GtEntityMapperFactory;
 import org.openstreetmap.josm.plugins.ods.geotools.SimpleFeatureEntityType;
@@ -29,7 +26,6 @@ import org.openstreetmap.josm.plugins.ods.properties.pojo.PojoEntityType;
 import org.openstreetmap.josm.plugins.ods.properties.transform.CastingGeoTypeTransform;
 import org.openstreetmap.josm.plugins.ods.properties.transform.GeoTypeTransform;
 import org.openstreetmap.josm.plugins.ods.properties.transform.SimpleTypeTransform;
-import org.openstreetmap.josm.plugins.ods.properties.transform.TypeTransform;
 import org.openstreetmap.josm.plugins.ods.wfs.WFSHost;
 import org.openstreetmap.josm.tools.I18n;
 
@@ -206,39 +202,6 @@ public class BagEntityMapperFactory extends GtEntityMapperFactory {
         }
     }
 
-    private static class PandStatusTransform extends SimpleTypeTransform<String, EntityStatus> {
-        public PandStatusTransform() {
-            super(String.class, EntityStatus.class, null);
-        }
-
-        @Override
-        public EntityStatus apply(String status) {
-            if (status == null) {
-                return EntityStatus.UNKNOWN;
-            }
-            switch (status) {
-            case "Bouwvergunning verleend":
-                return EntityStatus.PLANNED;
-            case "Bouw gestart":
-                return EntityStatus.CONSTRUCTION;
-            case "Pand in gebruik":
-            case "Pand buiten gebruik":
-            case "Plaats aangewezen":
-                return EntityStatus.IN_USE;
-            case "Pand in gebruik (niet ingemeten)":
-                return EntityStatus.IN_USE_NOT_MEASURED;
-            case "Niet gerealiseerd pand":
-                return EntityStatus.NOT_REALIZED;
-            case "Sloopvergunning verleend":
-                return EntityStatus.REMOVAL_DUE;
-            case "Pand gesloopt":
-                return EntityStatus.REMOVED;
-            default:
-                return EntityStatus.UNKNOWN;
-            }
-        }
-    }
-
     private static class AddressNodeStatusTransform extends SimpleTypeTransform<String, EntityStatus> {
         public AddressNodeStatusTransform() {
             super(String.class, EntityStatus.class, null);
@@ -262,35 +225,6 @@ public class BagEntityMapperFactory extends GtEntityMapperFactory {
             default:
                 return EntityStatus.IN_USE;
             }
-        }
-    }
-
-    private static class BouwjaarTransform implements TypeTransform<BigDecimal, StartDate> {
-        public BouwjaarTransform() {
-            super();
-        }
-
-        @Override
-        public Class<BigDecimal> getSourceType() {
-            return BigDecimal.class;
-        }
-
-        @Override
-        public Class<StartDate> getTargetType() {
-            return StartDate.class;
-        }
-
-        @Override
-        public Function<BigDecimal, StartDate> getFunction() {
-            return null;
-        }
-
-        @Override
-        public StartDate apply(BigDecimal bouwjaar) {
-            if (bouwjaar == null) {
-                return null;
-            }
-            return new StartDate(Year.of(bouwjaar.intValue()));
         }
     }
 }

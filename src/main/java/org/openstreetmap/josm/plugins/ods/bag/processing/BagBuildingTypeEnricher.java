@@ -13,28 +13,30 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.openstreetmap.josm.plugins.ods.OdsModule;
+import org.openstreetmap.josm.plugins.ods.OpenDataServicesPlugin;
 import org.openstreetmap.josm.plugins.ods.bag.osm.build.BagBuildingEntityPrimitiveBuilder;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressNode;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingUnit;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OpenDataBuilding;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.TypeOfBuilding;
-import org.openstreetmap.josm.plugins.ods.io.OdsProcessor;
+import org.openstreetmap.josm.plugins.ods.io.AbstractTask;
 
-public class BagBuildingTypeEnricher implements OdsProcessor {
+public class BagBuildingTypeEnricher extends AbstractTask {
     private final static List<String> trafo =
             Arrays.asList("TRAF","TRAN","TRFO","TRNS");
     private final static List<String> garage =
             Arrays.asList("GAR","GRG");
-    private final OdsModule module = OdsProcessor.getModule();
+    private final OdsModule module = OpenDataServicesPlugin.getModule();
 
     public BagBuildingTypeEnricher() {
         super();
     }
 
     @Override
-    public void run() {
-        module.getRepository().getAll(OpenDataBuilding.class)
+    public Void call() {
+        module.getRepository().query(OpenDataBuilding.class)
         .forEach(this::updateType);
+        return null;
     }
 
     public void updateType(OpenDataBuilding building) {

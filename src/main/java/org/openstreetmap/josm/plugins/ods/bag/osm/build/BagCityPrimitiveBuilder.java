@@ -2,18 +2,17 @@ package org.openstreetmap.josm.plugins.ods.bag.osm.build;
 
 import java.time.LocalDate;
 
-import org.openstreetmap.josm.plugins.ods.LayerManager;
-import org.openstreetmap.josm.plugins.ods.domains.places.City;
+import org.openstreetmap.josm.plugins.ods.domains.places.OpenDataCity;
 import org.openstreetmap.josm.plugins.ods.util.OdsTagMap;
 
-public class BagCityPrimitiveBuilder extends BagEntityPrimitiveBuilder<City> {
+public class BagCityPrimitiveBuilder extends BagEntityPrimitiveBuilder<OpenDataCity> {
 
-    public BagCityPrimitiveBuilder(LayerManager dataLayer) {
-        super(dataLayer, City.class);
+    public BagCityPrimitiveBuilder() {
+        super(OpenDataCity.class);
     }
 
     @Override
-    protected void buildTags(City city, OdsTagMap tags) {
+    protected void buildTags(OpenDataCity city, OdsTagMap tags) {
         tags.put("source", "BAG");
         LocalDate date = city.getSourceDate();
         if (date != null) {

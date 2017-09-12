@@ -16,24 +16,23 @@ import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingEntityType;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingUnit;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingUnitEntityType;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.processing.BuildingCompletenessEnricher;
-import org.openstreetmap.josm.plugins.ods.entities.PrimitiveBuilder;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.FeatureDownloader;
-import org.openstreetmap.josm.plugins.ods.entities.opendata.OpenDataLayerDownloader;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 import org.openstreetmap.josm.plugins.ods.geotools.GtDataSource;
 import org.openstreetmap.josm.plugins.ods.geotools.GtDownloader;
 import org.openstreetmap.josm.plugins.ods.geotools.GtDownloaderFactory;
-import org.openstreetmap.josm.plugins.ods.io.OdsProcessor;
+import org.openstreetmap.josm.plugins.ods.io.OpenDataLayerDownloader;
+import org.openstreetmap.josm.plugins.ods.io.Task;
 
 public class BagWfsLayerDownloader extends OpenDataLayerDownloader {
-    private final static List<Class<? extends OdsProcessor>> odsProcessors = Arrays.asList(
+    private final static List<Class<? extends Task>> odsProcessors = Arrays.asList(
             BuildingUnitToBuildingConnector.class,
             OdAddressToBuildingConnector.class,
             BuildingCompletenessEnricher.class,
             AddressNodeDistributor.class,
-            BagBuildingTypeEnricher.class);
+            BagBuildingTypeEnricher.class,
+            OpenDataLayerDownloader.UpdateLayerTask.class);
     private final OdsModuleConfiguration configuration;
-    private BagPrimitiveBuilder primitiveBuilder;
 
     LinkedList<BuildingUnit> unmatchedHousingUnits = new LinkedList<>();
     private final GtDownloaderFactory gtDownloaderFactory;
@@ -45,12 +44,7 @@ public class BagWfsLayerDownloader extends OpenDataLayerDownloader {
     }
 
     @Override
-    protected PrimitiveBuilder getPrimitiveBuilder() {
-        return this.primitiveBuilder;
-    }
-
-    @Override
-    protected List<Class<? extends OdsProcessor>> getProcessors() {
+    protected List<Class<? extends Task>> getProcessors() {
         return odsProcessors;
     }
 
@@ -59,9 +53,9 @@ public class BagWfsLayerDownloader extends OpenDataLayerDownloader {
         addFeatureDownloader(createBuildingDownloader("bag:pand"));
         addFeatureDownloader(createBuildingDownloader("bag:ligplaats"));
         addFeatureDownloader(createBuildingDownloader("bag:standplaats"));
-        //        addFeatureDownloader(createMissingAddressDownloader());
+        addFeatureDownloader(createDeletedBuildingDownloader());
+        addFeatureDownloader(createMissingAddressDownloader());
         addFeatureDownloader(createVerblijfsobjectDownloader());
-        this.primitiveBuilder = new BagPrimitiveBuilder(getModule());
     }
 
     private FeatureDownloader createVerblijfsobjectDownloader() throws OdsException {
@@ -72,6 +66,11 @@ public class BagWfsLayerDownloader extends OpenDataLayerDownloader {
     private FeatureDownloader createMissingAddressDownloader() throws OdsException {
         GtDataSource dataSource = (GtDataSource) configuration.getDataSource("bag:Address_Missing");
         return gtDownloaderFactory.createDownloader(dataSource, AddressNodeEntityType.class);
+    }
+
+    private FeatureDownloader createDeletedBuildingDownloader() throws OdsException {
+        GtDataSource dataSource = (GtDataSource) configuration.getDataSource("bag:Building_Destroyed");
+        return gtDownloaderFactory.createDownloader(dataSource, BuildingEntityType.class);
     }
 
     private FeatureDownloader createBuildingDownloader(String featureType) throws OdsException {

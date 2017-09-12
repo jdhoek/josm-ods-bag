@@ -8,12 +8,15 @@ import org.openstreetmap.josm.plugins.ods.AbstractModuleConfiguration;
 import org.openstreetmap.josm.plugins.ods.OdsDataSource;
 import org.openstreetmap.josm.plugins.ods.bag.gt.build.BagEntityMapperFactory;
 import org.openstreetmap.josm.plugins.ods.bag.gt.build.DuinoordEntityMapperFactory;
+import org.openstreetmap.josm.plugins.ods.bag.osm.build.BagAddressNodeEntityPrimitiveBuilder;
+import org.openstreetmap.josm.plugins.ods.bag.osm.build.BagBuildingEntityPrimitiveBuilder;
 import org.openstreetmap.josm.plugins.ods.bag.osm.build.BagOsmAddressNodeBuilder;
 import org.openstreetmap.josm.plugins.ods.bag.osm.build.BagOsmBuildingBuilder;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressNodeEntityType;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.processing.Osm_Building_AddressNode_RelationManager;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingEntityType;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingUnitEntityType;
+import org.openstreetmap.josm.plugins.ods.entities.EntityPrimitiveBuilder;
 import org.openstreetmap.josm.plugins.ods.entities.EntityType;
 import org.openstreetmap.josm.plugins.ods.entities.osm.OsmEntityBuilder;
 import org.openstreetmap.josm.plugins.ods.geotools.GtDatasourceBuilder;
@@ -39,11 +42,13 @@ public class BagConfiguration extends AbstractModuleConfiguration {
         GtFeatureSource ligplaatsFeatureSource = new GtFeatureSource(bagWfsHost, "bag:ligplaats", "identificatie");
         GtFeatureSource standplaatsFeatureSource = new GtFeatureSource(bagWfsHost, "bag:standplaats", "identificatie");
         GtFeatureSource missingAddressFS = new GtFeatureSource(duinoordWfsHost, "bag:Address_Missing", "nummeraanduiding");
+        GtFeatureSource deletedBuildingFS = new GtFeatureSource(duinoordWfsHost, "bag:Building_Destroyed", "identificatie");
         addFeatureSource(vboFeatureSource);
         addFeatureSource(pandFeatureSource);
         addFeatureSource(ligplaatsFeatureSource);
         addFeatureSource(standplaatsFeatureSource);
         addFeatureSource(missingAddressFS);
+        addFeatureSource(deletedBuildingFS);
 
         entityMapperFactory = new BagEntityMapperFactory(bagWfsHost);
         duinoordEntityMapperFactory = new DuinoordEntityMapperFactory(duinoordWfsHost);
@@ -52,8 +57,15 @@ public class BagConfiguration extends AbstractModuleConfiguration {
         addDataSource(createLigplaatsDataSource(ligplaatsFeatureSource));
         addDataSource(createStandplaatsDataSource(standplaatsFeatureSource));
         addDataSource(createMissingAddressDataSource(missingAddressFS));
+        addDataSource(createDeletedBuildingDataSource(deletedBuildingFS));
     }
 
+    @Override
+    public Collection<Class<? extends EntityPrimitiveBuilder<?>>> getPrimitiveBuilders() {
+        return Arrays.asList(
+                BagBuildingEntityPrimitiveBuilder.class,
+                BagAddressNodeEntityPrimitiveBuilder.class);
+    }
 
     @Override
     public Collection<? extends EntityType> getEntityTypes() {
@@ -117,8 +129,17 @@ public class BagConfiguration extends AbstractModuleConfiguration {
         GtDatasourceBuilder builder = new GtDatasourceBuilder()
                 .setFeatureSource(featureSource)
                 .setProperties("nummeraanduiding", "postcode", "huisnummer", "huisnummertoevoeging",
-                        "huisletter", "straat", "huisnummer", "woonplaats", "geopunt")
+                        "huisletter", "straat", "huisnummer", "woonplaats", "pandidentificatie", "geopunt")
                 .setUniqueKey("nummeraanduiding")
+                .setEntityMapperFactory(duinoordEntityMapperFactory);
+        return builder.build();
+    }
+
+    private OdsDataSource createDeletedBuildingDataSource(GtFeatureSource featureSource) {
+        GtDatasourceBuilder builder = new GtDatasourceBuilder()
+                .setFeatureSource(featureSource)
+                .setProperties("identificatie", "pandstatus", "bouwjaar", "geovlak")
+                .setUniqueKey("identificatie")
                 .setEntityMapperFactory(duinoordEntityMapperFactory);
         return builder.build();
     }

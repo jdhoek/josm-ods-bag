@@ -19,15 +19,20 @@ import org.openstreetmap.josm.plugins.ods.OdsModuleConfiguration;
 import org.openstreetmap.josm.plugins.ods.crs.CRSUtil;
 import org.openstreetmap.josm.plugins.ods.crs.CRSUtilProj4j;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressNode;
+import org.openstreetmap.josm.plugins.ods.domains.addresses.OpenDataAddressNode;
+import org.openstreetmap.josm.plugins.ods.domains.addresses.matching.AddressableMatcher;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.Building;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingUnit;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.OpenDataBuilding;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.actions.BuildingPassageAction;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.matching.BuildingMatcher;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.OpenDataLayerManager;
 import org.openstreetmap.josm.plugins.ods.entities.osm.OsmLayerManager;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 import org.openstreetmap.josm.plugins.ods.gui.AlignBuildingAction;
 import org.openstreetmap.josm.plugins.ods.gui.OdsDownloadAction;
 import org.openstreetmap.josm.plugins.ods.gui.OdsResetAction;
+import org.openstreetmap.josm.plugins.ods.gui.OdsStatisticsAction;
 import org.openstreetmap.josm.plugins.ods.gui.OdsUpdateAction;
 import org.openstreetmap.josm.plugins.ods.io.MainDownloader;
 import org.openstreetmap.josm.plugins.ods.io.OsmLayerDownloader;
@@ -66,8 +71,8 @@ public class BagImportModule extends OdsModule {
     public void initialize() throws OdsException {
         super.initialize();
         mainDownloader.initialize();
-        //        getMatcherManager().registerMatcher(new BuildingMatcher(this));
-        //        getMatcherManager().registerMatcher(new AddressableMatcher(this));
+        getMatchingProcessor().registerMatcher(new BuildingMatcher(this));
+        getMatchingProcessor().registerMatcher(new AddressableMatcher(this));
         addAction(new OdsDownloadAction(this));
         //        addAction(new RemoveAssociatedStreetsAction(this));
         //        addAction(new OdsImportAction(this));
@@ -76,25 +81,27 @@ public class BagImportModule extends OdsModule {
         //        addAction(new UpdateGeometryAction(this));
         addAction(new AlignBuildingAction(this));
         addAction(new OdsResetAction(this));
-        //        actions.add(new AlignBuildingsAction(this));
-        //        actions.add(new RemoveShortSegmentsAction(this));
+        String debug = System.getenv("ods-debug");
+        if ("true".equals(debug)) {
+            addAction(new OdsStatisticsAction(this));
+        }
     }
 
     @Override
     protected OsmLayerManager createOsmLayerManager() {
         OsmLayerManager manager = new OsmLayerManager(this, "BAG OSM");
-        GeoRepository repository = (GeoRepository) getRepository();
-        repository.register(Building.class, "primaryId");
-        repository.addIndex(Building.class, "referenceId");
-        repository.addGeoIndex(Building.class, "geometry");
-        repository.register(AddressNode.class, "primaryId");
+        GeoRepository repository = getRepository();
+        repository.register(OpenDataBuilding.class, "primaryId");
+        repository.addIndex(OpenDataBuilding.class, "referenceId");
+        repository.addGeoIndex(OpenDataBuilding.class, "geometry");
+        repository.register(OpenDataAddressNode.class, "primaryId");
         return manager;
     }
 
     @Override
     protected OpenDataLayerManager createOpenDataLayerManager() {
         OpenDataLayerManager manager = new OpenDataLayerManager("BAG ODS");
-        GeoRepository repository = (GeoRepository) getRepository();
+        GeoRepository repository = getRepository();
         repository.register(Building.class, "primaryId");
         repository.addIndex(Building.class, "referenceId");
         repository.addGeoIndex(Building.class, "geometry");

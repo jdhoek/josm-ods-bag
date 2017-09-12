@@ -8,8 +8,9 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.openstreetmap.josm.plugins.ods.OdsFeatureSource;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressImpl;
-import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressNode;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.OpenDataAddressNode;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.OpenDataBuilding;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.TypeOfBuilding;
 import org.openstreetmap.josm.plugins.ods.entities.EntityStatus;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 import org.openstreetmap.josm.plugins.ods.geotools.GtEntityMapperFactory;
@@ -20,6 +21,7 @@ import org.openstreetmap.josm.plugins.ods.properties.SimpleEntityFactory;
 import org.openstreetmap.josm.plugins.ods.properties.SimpleEntityMapper;
 import org.openstreetmap.josm.plugins.ods.properties.pojo.PojoEntityType;
 import org.openstreetmap.josm.plugins.ods.properties.transform.CastingGeoTypeTransform;
+import org.openstreetmap.josm.plugins.ods.properties.transform.GeoTypeTransform;
 import org.openstreetmap.josm.plugins.ods.properties.transform.SimpleTypeTransform;
 import org.openstreetmap.josm.plugins.ods.wfs.WFSHost;
 import org.openstreetmap.josm.tools.I18n;
@@ -43,16 +45,18 @@ public class DuinoordEntityMapperFactory extends GtEntityMapperFactory {
         switch (feature) {
         case "bag:Address_Missing":
             return createAddressNodeMapper(featureType);
+        case "bag:Building_Destroyed":
+            return createDeletedBuildingMapper(featureType);
         default:
             throw new OdsException(I18n.tr("There is no entity mapper for feature ''{0}''", feature));
         }
     }
 
-    public static SimpleEntityMapper<SimpleFeature, AddressNode> createAddressNodeMapper(SimpleFeatureType featureType) {
+    public static SimpleEntityMapper<SimpleFeature, OpenDataAddressNode> createAddressNodeMapper(SimpleFeatureType featureType) {
         CoordinateReferenceSystem crs = featureType.getCoordinateReferenceSystem();
         OdsEntityType<SimpleFeature> sourceType = new SimpleFeatureEntityType(featureType);
-        OdsEntityType<AddressNode> targetType = new PojoEntityType<>(AddressNode.class);
-        EntityMapperBuilder<SimpleFeature, AddressNode> builder =
+        OdsEntityType<OpenDataAddressNode> targetType = new PojoEntityType<>(OpenDataAddressNode.class);
+        EntityMapperBuilder<SimpleFeature, OpenDataAddressNode> builder =
                 new EntityMapperBuilder<>(sourceType, targetType);
         builder.setFactory(new SimpleEntityFactory<>(OpenDataAddressNode.class));
         builder.addAttributeMapping("#ID", "primaryId");
@@ -75,6 +79,24 @@ public class DuinoordEntityMapperFactory extends GtEntityMapperFactory {
         builder.addAttributeMapping("postcode", "postcode");
         builder.addAttributeMapping("straat", "streetName");
         builder.addAttributeMapping("woonplaats", "cityName");
+        return builder.build();
+    }
+
+    public static SimpleEntityMapper<SimpleFeature, OpenDataBuilding> createDeletedBuildingMapper(SimpleFeatureType featureType) {
+        CoordinateReferenceSystem crs = featureType.getCoordinateReferenceSystem();
+        OdsEntityType<SimpleFeature> sourceType = new SimpleFeatureEntityType(featureType);
+        OdsEntityType<OpenDataBuilding> targetType = new PojoEntityType<>(OpenDataBuilding.class);
+        EntityMapperBuilder<SimpleFeature, OpenDataBuilding> builder =
+                new EntityMapperBuilder<>(sourceType, targetType);
+        builder.setFactory(new SimpleEntityFactory<>(OpenDataBuilding.class));
+        builder.addAttributeMapping("#ID", "primaryId");
+        builder.addAttributeMapping("identificatie", "referenceId", new SimpleTypeTransform<>(BigDecimal.class, Long.class, BigDecimal::longValue));
+        builder.addAttributeMapping("pandstatus", "status", new PandStatusTransform());
+        builder.addAttributeMapping("bouwjaar", "startDate", new BouwjaarTransform());
+        builder.addAttributeMapping("geovlak", "geometry", new GeoTypeTransform(crs));
+        builder.addConstant("deleted", true);
+        builder.addConstant("buildingType", TypeOfBuilding.UNCLASSIFIED);
+        builder.addConstant("source", "BAG");
         return builder.build();
     }
 

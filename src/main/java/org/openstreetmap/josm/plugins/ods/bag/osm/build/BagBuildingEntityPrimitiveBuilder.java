@@ -3,34 +3,23 @@ package org.openstreetmap.josm.plugins.ods.bag.osm.build;
 import java.time.LocalDate;
 import java.util.Optional;
 
-import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.Address;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.Building;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.OpenDataBuilding;
 import org.openstreetmap.josm.plugins.ods.entities.EntityStatus;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 import org.openstreetmap.josm.plugins.ods.util.OdsTagMap;
 
-public class BagBuildingEntityPrimitiveBuilder extends BagEntityPrimitiveBuilder<Building> {
+public class BagBuildingEntityPrimitiveBuilder extends BagEntityPrimitiveBuilder<OpenDataBuilding> {
 
-    public BagBuildingEntityPrimitiveBuilder(LayerManager dataLayer) {
-        super(dataLayer, Building.class);
+    public BagBuildingEntityPrimitiveBuilder() {
+        super(OpenDataBuilding.class);
     }
 
-    //    //TODO Implement this using a predicate in stead.
-    //    @Override
-    //    public void createPrimitive(Building building) {
-    //        // Ignore buildings with status "PLANNED"
-    //        // Make an exception for buildings that already exist in OSM. In that case, the building permit is for reconstruction
-    //        if (EntityStatus.PLANNED.equals(building.getStatus())
-    //                && building.getMatch(building.getBaseType()) == null) {
-    //            return;
-    //        }
-    //        super.createPrimitive(building);
-    //    }
-    //
-
     @Override
-    protected void buildTags(Building building, OdsTagMap tags) {
+    protected void buildTags(OpenDataBuilding building,
+            OdsTagMap tags) {
+        //    protected void buildTags(OdEntity<BuildingEntityType> building, OdsTagMap tags) {
         Optional<Address> address = building.getAddress();
         if (address.isPresent()) {
             createAddressTags(address.get(), tags);
@@ -68,4 +57,11 @@ public class BagBuildingEntityPrimitiveBuilder extends BagEntityPrimitiveBuilder
             }
         }
     }
+
+    //    @Override
+    //    protected <E extends OdEntity<BuildingEntityType>> void buildTags(E entity,
+    //            OdsTagMap tags) {
+    //        // TODO Auto-generated method stub
+    //
+    //    }
 }
