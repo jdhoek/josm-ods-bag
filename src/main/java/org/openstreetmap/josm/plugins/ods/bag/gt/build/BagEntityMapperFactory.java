@@ -60,7 +60,7 @@ public class BagEntityMapperFactory extends GtEntityMapperFactory {
     }
 
 
-    public SimpleEntityMapper<SimpleFeature, BagBuilding> createBuildingMapper(SimpleFeatureType featureType) throws OdsException {
+    public static SimpleEntityMapper<SimpleFeature, BagBuilding> createBuildingMapper(SimpleFeatureType featureType) {
         CoordinateReferenceSystem crs = featureType.getCoordinateReferenceSystem();
         OdsEntityType<SimpleFeature> sourceType = new SimpleFeatureEntityType(featureType);
         OdsEntityType<BagBuilding> targetType = new PojoEntityType<>(BagBuilding.class);
@@ -92,7 +92,7 @@ public class BagEntityMapperFactory extends GtEntityMapperFactory {
         return builder.build();
     }
 
-    public SimpleEntityMapper<SimpleFeature, BagHousingUnit> createHousingUnitMapper(SimpleFeatureType featureType) throws OdsException {
+    public static SimpleEntityMapper<SimpleFeature, BagHousingUnit> createHousingUnitMapper(SimpleFeatureType featureType) {
         CoordinateReferenceSystem crs = featureType.getCoordinateReferenceSystem();
         OdsEntityType<SimpleFeature> sourceType = new SimpleFeatureEntityType(featureType);
         OdsEntityType<BagHousingUnit> targetType = new PojoEntityType<>(BagHousingUnit.class);
@@ -112,7 +112,7 @@ public class BagEntityMapperFactory extends GtEntityMapperFactory {
         return builder.build();
     }
 
-    public SimpleEntityMapper<SimpleFeature, BagBuilding> createLigplaatsMapper(SimpleFeatureType featureType) throws OdsException {
+    public static SimpleEntityMapper<SimpleFeature, BagBuilding> createLigplaatsMapper(SimpleFeatureType featureType) {
         CoordinateReferenceSystem crs = featureType.getCoordinateReferenceSystem();
         OdsEntityType<SimpleFeature> sourceType = new SimpleFeatureEntityType(featureType);
         OdsEntityType<BagBuilding> targetType = new PojoEntityType<>(BagBuilding.class);
@@ -129,7 +129,7 @@ public class BagEntityMapperFactory extends GtEntityMapperFactory {
         return builder.build();
     }
 
-    public SimpleEntityMapper<SimpleFeature, BagBuilding> createStandplaatsMapper(SimpleFeatureType featureType) throws OdsException {
+    public static SimpleEntityMapper<SimpleFeature, BagBuilding> createStandplaatsMapper(SimpleFeatureType featureType) {
         CoordinateReferenceSystem crs = featureType.getCoordinateReferenceSystem();
         OdsEntityType<SimpleFeature> sourceType = new SimpleFeatureEntityType(featureType);
         OdsEntityType<BagBuilding> targetType = new PojoEntityType<>(BagBuilding.class);

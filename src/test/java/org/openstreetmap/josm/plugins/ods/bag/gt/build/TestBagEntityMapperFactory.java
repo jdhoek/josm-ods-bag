@@ -19,13 +19,14 @@ import org.openstreetmap.josm.plugins.ods.wfs.file.FileWFSDataStore;
 
 public class TestBagEntityMapperFactory {
 
+    @SuppressWarnings("static-method")
     @Test
     public void testCreateAddressMapper(SimpleFeatureType simpleFeatureType) throws IOException {
         File dir = new File (FileWFSDataStore.class.getResource("/testdata/inktpot_1_1_0").getFile());
         TestData testData = TestDataLoader.loadTestData(dir, new String[] {"verblijfsobject"});
         DataStore dataStore = testData.getDataStore();
         BagEntityMapperFactory factory = new BagEntityMapperFactory(dataStore);
-        SimpleEntityMapper<SimpleFeature, Address> mapper = factory.createAddressMapper(simpleFeatureType);
+        SimpleEntityMapper<SimpleFeature, Address> mapper = BagEntityMapperFactory.createAddressMapper(simpleFeatureType);
         assertNotNull(mapper);
     }
 
@@ -34,9 +35,8 @@ public class TestBagEntityMapperFactory {
         File dir = new File (getClass().getResource("/testdata/inktpot_1_1_0").getFile());
         TestData testData = TestDataLoader.loadTestData(dir, new String[] {"verblijfsobject"});
         DataStore dataStore = testData.getDataStore();
-        BagEntityMapperFactory factory = new BagEntityMapperFactory(dataStore);
         SimpleFeatureType featureType = dataStore.getSchema("verblijfsobject");
-        SimpleEntityMapper<SimpleFeature, Address> mapper = factory.createAddressMapper(featureType);
+        SimpleEntityMapper<SimpleFeature, Address> mapper = BagEntityMapperFactory.createAddressMapper(featureType);
         Name typeName = new NameImpl("http://bag.geonovum.nl", "verblijfsobject");
         SimpleFeature feature = testData.getFeature(typeName, "verblijfsobject.5880559");
         Address address = mapper.map(feature);

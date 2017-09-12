@@ -40,6 +40,7 @@ import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
 import org.openstreetmap.josm.plugins.ods.storage.GeoRepository;
 import org.openstreetmap.josm.plugins.ods.update.EntityUpdater;
 import org.openstreetmap.josm.tools.I18n;
+import org.openstreetmap.josm.tools.Logging;
 
 public class BagImportModule extends OdsModule {
     private final OdsModuleConfiguration configuration;
@@ -182,7 +183,7 @@ public class BagImportModule extends OdsModule {
             String suffix = "_BAG";
             return user.endsWith(suffix);
         } catch (OsmTransferException e1) {
-            Main.warn(tr("Failed to retrieve OSM user details from the server."));
+            Logging.warn(tr("Failed to retrieve OSM user details from the server."));
             return false;
         }
     }
