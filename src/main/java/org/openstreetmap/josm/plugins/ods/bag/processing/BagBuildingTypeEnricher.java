@@ -19,9 +19,10 @@ import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressNode;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingUnit;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OpenDataBuilding;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.TypeOfBuilding;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.processing.BuildingTypeEnricher;
 import org.openstreetmap.josm.plugins.ods.io.AbstractTask;
 
-public class BagBuildingTypeEnricher extends AbstractTask {
+public class BagBuildingTypeEnricher extends AbstractTask implements BuildingTypeEnricher {
     private final static List<String> trafo =
             Arrays.asList("TRAF","TRAN","TRFO","TRNS");
     private final static List<String> garage =

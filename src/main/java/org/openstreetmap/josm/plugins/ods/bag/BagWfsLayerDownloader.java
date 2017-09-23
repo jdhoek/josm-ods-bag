@@ -1,7 +1,6 @@
 package org.openstreetmap.josm.plugins.ods.bag;
 
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.openstreetmap.josm.plugins.ods.Normalisation;
@@ -13,7 +12,6 @@ import org.openstreetmap.josm.plugins.ods.domains.addresses.processing.AddressNo
 import org.openstreetmap.josm.plugins.ods.domains.addresses.processing.BuildingUnitToBuildingConnector;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.processing.OdAddressToBuildingConnector;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingEntityType;
-import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingUnit;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingUnitEntityType;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.processing.BuildingCompletenessEnricher;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.FeatureDownloader;
@@ -29,12 +27,12 @@ public class BagWfsLayerDownloader extends OpenDataLayerDownloader {
             BuildingUnitToBuildingConnector.class,
             OdAddressToBuildingConnector.class,
             BuildingCompletenessEnricher.class,
-            AddressNodeDistributor.class,
             BagBuildingTypeEnricher.class,
+            OpenDataLayerDownloader.BuildPrimitivesTask.class,
+            AddressNodeDistributor.class,
             OpenDataLayerDownloader.UpdateLayerTask.class);
     private final OdsModuleConfiguration configuration;
 
-    LinkedList<BuildingUnit> unmatchedHousingUnits = new LinkedList<>();
     private final GtDownloaderFactory gtDownloaderFactory;
 
     public BagWfsLayerDownloader(OdsModule module) {
