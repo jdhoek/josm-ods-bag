@@ -4,12 +4,12 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.domains.places.OsmCity;
 import org.openstreetmap.josm.plugins.ods.osm.build.AbstractOsmCityBuilder;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 import org.openstreetmap.josm.tools.I18n;
+import org.openstreetmap.josm.tools.Logging;
 
 public class BagOsmCityBuilder extends AbstractOsmCityBuilder {
     @SuppressWarnings("hiding")
@@ -36,14 +36,14 @@ public class BagOsmCityBuilder extends AbstractOsmCityBuilder {
         String id = tags.get("ref:woonplaatscode");
         try {
             if (id == null) {
-                Main.warn(I18n.tr("The city reference code is missing for " +
+                Logging.warn(I18n.tr("The city reference code is missing for " +
                         " city '%s'.", city.getName()));
 
             }
             city.setReferenceId(Long.parseLong(id));
         }
         catch (NumberFormatException e) {
-            Main.warn(I18n.tr("'%s' is not a valid value for a city reference code" +
+            Logging.warn(I18n.tr("'%s' is not a valid value for a city reference code" +
                     " (%s).", id, city.getName()));
         }
     }
