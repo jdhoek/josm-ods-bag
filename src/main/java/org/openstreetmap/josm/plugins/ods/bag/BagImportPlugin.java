@@ -5,6 +5,6 @@ import org.openstreetmap.josm.plugins.ods.OdsModulePlugin;
 
 public class BagImportPlugin extends OdsModulePlugin {
     public BagImportPlugin(PluginInformation info) {
-        super(info, new BagImportModule());
+        super(info, new BagGuiceModule());
     }
 }

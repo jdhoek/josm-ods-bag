@@ -20,12 +20,10 @@ import org.openstreetmap.josm.plugins.ods.crs.CRSUtil;
 import org.openstreetmap.josm.plugins.ods.crs.CRSUtilProj4j;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressNode;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.OpenDataAddressNode;
-import org.openstreetmap.josm.plugins.ods.domains.addresses.matching.AddressableMatcher;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.Building;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingUnit;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OpenDataBuilding;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.actions.BuildingPassageAction;
-import org.openstreetmap.josm.plugins.ods.domains.buildings.matching.BuildingMatcher;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.OpenDataLayerManager;
 import org.openstreetmap.josm.plugins.ods.entities.osm.OsmLayerManager;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
@@ -71,9 +69,7 @@ public class BagImportModule extends OdsModule {
     @Override
     public void initialize() throws OdsException {
         super.initialize();
-        mainDownloader.initialize();
-        getMatchingProcessor().registerMatcher(new BuildingMatcher(this));
-        getMatchingProcessor().registerMatcher(new AddressableMatcher(this));
+
         addAction(new OdsDownloadAction(this));
         //        addAction(new RemoveAssociatedStreetsAction(this));
         //        addAction(new OdsImportAction(this));

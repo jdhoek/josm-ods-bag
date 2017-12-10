@@ -7,12 +7,9 @@ import org.openstreetmap.josm.plugins.ods.Normalisation;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.OdsModuleConfiguration;
 import org.openstreetmap.josm.plugins.ods.bag.processing.BagBuildingTypeEnricher;
-import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressNodeEntityType;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.processing.AddressNodeDistributor;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.processing.BuildingUnitToBuildingConnector;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.processing.OdAddressToBuildingConnector;
-import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingEntityType;
-import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingUnitEntityType;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.processing.BuildingCompletenessEnricher;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.FeatureDownloader;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
@@ -58,22 +55,22 @@ public class BagWfsLayerDownloader extends OpenDataLayerDownloader {
 
     private FeatureDownloader createVerblijfsobjectDownloader() throws OdsException {
         GtDataSource dataSource = (GtDataSource) configuration.getDataSource("bag:verblijfsobject");
-        return gtDownloaderFactory.createDownloader(dataSource, BuildingUnitEntityType.class);
+        return gtDownloaderFactory.createDownloader(dataSource);
     }
 
     private FeatureDownloader createMissingAddressDownloader() throws OdsException {
         GtDataSource dataSource = (GtDataSource) configuration.getDataSource("bag:Address_Missing");
-        return gtDownloaderFactory.createDownloader(dataSource, AddressNodeEntityType.class);
+        return gtDownloaderFactory.createDownloader(dataSource);
     }
 
     private FeatureDownloader createDeletedBuildingDownloader() throws OdsException {
         GtDataSource dataSource = (GtDataSource) configuration.getDataSource("bag:Building_Destroyed");
-        return gtDownloaderFactory.createDownloader(dataSource, BuildingEntityType.class);
+        return gtDownloaderFactory.createDownloader(dataSource);
     }
 
     private FeatureDownloader createBuildingDownloader(String featureType) throws OdsException {
         GtDataSource dataSource = (GtDataSource) configuration.getDataSource(featureType);
-        GtDownloader<?> downloader = gtDownloaderFactory.createDownloader(dataSource, BuildingEntityType.class);
+        GtDownloader downloader = gtDownloaderFactory.createDownloader(dataSource);
         /*
          *  The original BAG import partially normalised the building geometries,
          * by making the (outer) rings clockwise. For fast comparison of geometries,

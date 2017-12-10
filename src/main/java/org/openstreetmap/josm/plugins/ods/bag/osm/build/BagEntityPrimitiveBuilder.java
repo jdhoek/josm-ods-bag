@@ -8,7 +8,7 @@ import org.openstreetmap.josm.plugins.ods.entities.OdEntity;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 import org.openstreetmap.josm.plugins.ods.util.OdsTagMap;
 
-public abstract class BagEntityPrimitiveBuilder<E extends OdEntity<?>>
+public abstract class BagEntityPrimitiveBuilder<E extends OdEntity>
 extends AbstractEntityPrimitiveBuilder<E> {
 
     public BagEntityPrimitiveBuilder(Class<E> clazz) {
