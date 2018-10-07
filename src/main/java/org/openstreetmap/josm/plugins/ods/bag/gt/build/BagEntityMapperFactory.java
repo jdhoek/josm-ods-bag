@@ -8,7 +8,7 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.openstreetmap.josm.plugins.ods.OdsFeatureSource;
 import org.openstreetmap.josm.plugins.ods.bag.entity.BagBuilding;
-import org.openstreetmap.josm.plugins.ods.bag.entity.BagHousingUnit;
+import org.openstreetmap.josm.plugins.ods.bag.entity.BagBuildingUnit;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.Address;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressImpl;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressNode;
@@ -92,13 +92,13 @@ public class BagEntityMapperFactory extends GtEntityMapperFactory {
         return builder.build();
     }
 
-    public static SimpleEntityMapper<SimpleFeature, BagHousingUnit> createHousingUnitMapper(SimpleFeatureType featureType) {
+    public static SimpleEntityMapper<SimpleFeature, BagBuildingUnit> createHousingUnitMapper(SimpleFeatureType featureType) {
         CoordinateReferenceSystem crs = featureType.getCoordinateReferenceSystem();
         OdsEntityType<SimpleFeature> sourceType = new SimpleFeatureEntityType(featureType);
-        OdsEntityType<BagHousingUnit> targetType = new PojoEntityType<>(BagHousingUnit.class);
-        EntityMapperBuilder<SimpleFeature, BagHousingUnit> builder =
+        OdsEntityType<BagBuildingUnit> targetType = new PojoEntityType<>(BagBuildingUnit.class);
+        EntityMapperBuilder<SimpleFeature, BagBuildingUnit> builder =
                 new EntityMapperBuilder<>(sourceType, targetType);
-        builder.setFactory(new SimpleEntityFactory<>(BagHousingUnit.class));
+        builder.setFactory(new SimpleEntityFactory<>(BagBuildingUnit.class));
         builder.addAttributeMapping("#ID", "primaryId");
         builder.addAttributeMapping("identificatie", "referenceId", new SimpleTypeTransform<>(BigDecimal.class, Long.class, BigDecimal::longValue));
         builder.addAttributeMapping("gebruiksdoel", "gebruiksdoel");

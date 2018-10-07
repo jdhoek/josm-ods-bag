@@ -12,14 +12,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.openstreetmap.josm.plugins.ods.OdsModule;
-import org.openstreetmap.josm.plugins.ods.OpenDataServicesPlugin;
 import org.openstreetmap.josm.plugins.ods.bag.osm.build.BagBuildingEntityPrimitiveBuilder;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressNode;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingUnit;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OpenDataBuilding;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.TypeOfBuilding;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.processing.BuildingTypeEnricher;
+import org.openstreetmap.josm.plugins.ods.entities.EntityDao;
 import org.openstreetmap.josm.plugins.ods.io.AbstractTask;
 
 public class BagBuildingTypeEnricher extends AbstractTask implements BuildingTypeEnricher {
@@ -27,16 +26,16 @@ public class BagBuildingTypeEnricher extends AbstractTask implements BuildingTyp
             Arrays.asList("TRAF","TRAN","TRFO","TRNS");
     private final static List<String> garage =
             Arrays.asList("GAR","GRG");
-    private final OdsModule module = OpenDataServicesPlugin.getModule();
+    private final EntityDao<OpenDataBuilding> buildingDao;
 
-    public BagBuildingTypeEnricher() {
+    public BagBuildingTypeEnricher(EntityDao<OpenDataBuilding> buildingDao) {
         super();
+        this.buildingDao = buildingDao;
     }
 
     @Override
     public Void call() {
-        module.getRepository().query(OpenDataBuilding.class)
-        .forEach(this::updateType);
+        buildingDao.findAll().forEach(this::updateType);
         return null;
     }
 

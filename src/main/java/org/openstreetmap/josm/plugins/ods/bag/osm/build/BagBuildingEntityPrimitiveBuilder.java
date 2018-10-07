@@ -3,17 +3,21 @@ package org.openstreetmap.josm.plugins.ods.bag.osm.build;
 import java.time.LocalDate;
 import java.util.Optional;
 
+import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.Address;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.Building;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OpenDataBuilding;
+import org.openstreetmap.josm.plugins.ods.entities.EntityDao;
 import org.openstreetmap.josm.plugins.ods.entities.EntityStatus;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 import org.openstreetmap.josm.plugins.ods.util.OdsTagMap;
 
 public class BagBuildingEntityPrimitiveBuilder extends BagEntityPrimitiveBuilder<OpenDataBuilding> {
 
-    public BagBuildingEntityPrimitiveBuilder() {
-        super(OpenDataBuilding.class);
+
+    public BagBuildingEntityPrimitiveBuilder(OdsModule module,
+            EntityDao<OpenDataBuilding> dao) {
+        super(module, dao);
     }
 
     @Override

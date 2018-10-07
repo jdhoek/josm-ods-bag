@@ -2,13 +2,16 @@ package org.openstreetmap.josm.plugins.ods.bag.osm.build;
 
 import java.time.LocalDate;
 
+import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.domains.places.OpenDataCity;
+import org.openstreetmap.josm.plugins.ods.entities.EntityDao;
 import org.openstreetmap.josm.plugins.ods.util.OdsTagMap;
 
 public class BagCityPrimitiveBuilder extends BagEntityPrimitiveBuilder<OpenDataCity> {
 
-    public BagCityPrimitiveBuilder() {
-        super(OpenDataCity.class);
+
+    public BagCityPrimitiveBuilder(OdsModule module, EntityDao<OpenDataCity> dao) {
+        super(module, dao);
     }
 
     @Override

@@ -2,8 +2,10 @@ package org.openstreetmap.josm.plugins.ods.bag.osm.build;
 
 import java.util.Map;
 
+import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.Address;
 import org.openstreetmap.josm.plugins.ods.entities.AbstractEntityPrimitiveBuilder;
+import org.openstreetmap.josm.plugins.ods.entities.EntityDao;
 import org.openstreetmap.josm.plugins.ods.entities.OdEntity;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 import org.openstreetmap.josm.plugins.ods.util.OdsTagMap;
@@ -11,8 +13,8 @@ import org.openstreetmap.josm.plugins.ods.util.OdsTagMap;
 public abstract class BagEntityPrimitiveBuilder<E extends OdEntity>
 extends AbstractEntityPrimitiveBuilder<E> {
 
-    public BagEntityPrimitiveBuilder(Class<E> clazz) {
-        super(clazz);
+    public BagEntityPrimitiveBuilder(OdsModule module, EntityDao<E> dao) {
+        super(module, dao);
     }
 
     @Override

@@ -16,6 +16,7 @@ import org.openstreetmap.josm.io.OsmTransferException;
 import org.openstreetmap.josm.plugins.ods.ModuleActivationException;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.OdsModuleConfiguration;
+import org.openstreetmap.josm.plugins.ods.Scenario;
 import org.openstreetmap.josm.plugins.ods.crs.CRSUtil;
 import org.openstreetmap.josm.plugins.ods.crs.CRSUtilProj4j;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressNode;
@@ -33,7 +34,6 @@ import org.openstreetmap.josm.plugins.ods.gui.OdsResetAction;
 import org.openstreetmap.josm.plugins.ods.gui.OdsStatisticsAction;
 import org.openstreetmap.josm.plugins.ods.gui.OdsUpdateAction;
 import org.openstreetmap.josm.plugins.ods.io.MainDownloader;
-import org.openstreetmap.josm.plugins.ods.io.OsmLayerDownloader;
 import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
 import org.openstreetmap.josm.plugins.ods.storage.GeoRepository;
 import org.openstreetmap.josm.plugins.ods.update.EntityUpdater;
@@ -41,29 +41,33 @@ import org.openstreetmap.josm.tools.I18n;
 import org.openstreetmap.josm.tools.Logging;
 
 public class BagImportModule extends OdsModule {
-    private final OdsModuleConfiguration configuration;
+    //    private final OdsModuleConfiguration configuration;
     // Boundary of the Netherlands
     private final static Bounds BOUNDS = new Bounds(50.734, 3.206, 53.583, 7.245);
     private final MainDownloader mainDownloader;
     private final GeoUtil geoUtil = new GeoUtil();
     private final CRSUtil crsUtil = new CRSUtilProj4j();
     private List<EntityUpdater> entityUpdaters;
+    private final Scenario scenario = new Scenario1(this);
 
     public BagImportModule() {
-        this.configuration = new BagConfiguration();
-        this.mainDownloader = createMainDownloader();
+        scenario.initialize();
+        this.mainDownloader = scenario.getMainDownloader();
+        //        this.configuration = new BagConfiguration();
+        //        this.mainDownloader = createMainDownloader();
     }
 
-    private MainDownloader createMainDownloader() {
-        MainDownloader downloader = new MainDownloader(this);
-        downloader.setOpenDataLayerDownloader(new BagWfsLayerDownloader(this));
-        downloader.setOsmLayerDownloader(new OsmLayerDownloader(this));
-        return downloader;
-    }
+    //    private MainDownloader createMainDownloader() {
+    //        MainDownloader downloader = new MainDownloader(this);
+    //        downloader.setOpenDataLayerDownloader(new BagWfsLayerDownloader(this));
+    //        downloader.setOsmLayerDownloader(new OsmLayerDownloader(this));
+    //        return downloader;
+    //    }
 
     @Override
     public OdsModuleConfiguration getConfiguration() {
-        return configuration;
+        //        return configuration;
+        return null;
     }
 
     @Override

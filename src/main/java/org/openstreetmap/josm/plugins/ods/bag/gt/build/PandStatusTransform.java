@@ -3,7 +3,7 @@ package org.openstreetmap.josm.plugins.ods.bag.gt.build;
 import org.openstreetmap.josm.plugins.ods.entities.EntityStatus;
 import org.openstreetmap.josm.plugins.ods.properties.transform.SimpleTypeTransform;
 
-class PandStatusTransform extends SimpleTypeTransform<String, EntityStatus> {
+public class PandStatusTransform extends SimpleTypeTransform<String, EntityStatus> {
     public PandStatusTransform() {
         super(String.class, EntityStatus.class, null);
     }

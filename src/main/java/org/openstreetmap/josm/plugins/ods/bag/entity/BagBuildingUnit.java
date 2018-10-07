@@ -3,7 +3,7 @@ package org.openstreetmap.josm.plugins.ods.bag.entity;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.OpenDataAddressNode;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OpenDataBuildingUnit;
 
-public class BagHousingUnit extends OpenDataBuildingUnit {
+public class BagBuildingUnit extends OpenDataBuildingUnit {
     private String gebruiksdoel;
 
     @Override
